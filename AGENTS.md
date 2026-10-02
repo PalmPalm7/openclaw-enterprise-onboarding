@@ -2,11 +2,16 @@
 
 This repository publishes public onboarding for OpenClaw Enterprise. It contains documentation and a static site; it does not deploy infrastructure as part of documentation builds.
 
+## When asked to set up OCE
+
+Read `setup.md`, then `docs/GETTING_STARTED_AGENTS.md`, and carry out only the operator's requested local installation. `scripts/check-setup.sh` is a read-only first preflight. Documentation edits/site builds do not initiate deployment. Preserve local instructions, owned-resource isolation, explicit model/budget and private credentials. `llms.txt` is discovery; `llms-full.txt` is generated from the brief and runbook. `CLAUDE.md` imports this file rather than duplicating it.
+
 ## Keep two versions
 
 - `docs/GETTING_STARTED.md` is the concise human guide: next action first, five onboarding steps, commands linked to the runbook, explicit expected results.
 - `docs/GETTING_STARTED_AGENTS.md` is the detailed operator/agent runbook: exact inputs, source pins, private credential handling, acceptance, failure diagnosis and lifecycle.
 - Update both when prerequisites, commands, models or capability boundaries change. Markdown is the authored source; keep any generated site synchronized through its build.
+- Keep execution/discovery links synchronized. Graphs are self-contained SVGs in `docs/assets/`; do not add remote scripts/fonts or executable SVG content.
 
 ## Preserve evidence boundaries
 

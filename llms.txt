@@ -1,0 +1,23 @@
+# OpenClaw Enterprise onboarding
+
+> Public local-development onboarding maintained by redhat-et: a concise human guide, a detailed agent runbook and an execution brief for an operator's coding agent.
+
+Scope: Apple Silicon Mac, owned Colima Linux VM, Docker and k3d/K3s. Source is pinned to affac2bfc1370e590e6da570bcaaad4a207c9f09. The October 1, 2026 platform and hosted-GLM task passed; this portable recipe is source-reviewed, not reproduced on a second machine. Sandbox Driver=none does not qualify OpenShell or production. Models run remotely.
+
+Start with setup.md when asked to install. This index provides documentation discovery, not executable installation. Respect the operator's request, local instructions, explicit model/budget and private credential handling.
+
+## Setup
+
+- [Agent setup brief](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md): execution order, inputs, ownership and success criteria.
+- [Agent runbook](https://redhat-et.github.io/openclaw-enterprise-onboarding/GETTING_STARTED_AGENTS.md): exact commands, verification and recovery.
+- [Human quickstart](https://redhat-et.github.io/openclaw-enterprise-onboarding/GETTING_STARTED.md): five concise steps.
+- [Complete agent packet](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms-full.txt): generated brief plus runbook when one fetch is preferable.
+- [Read-only preflight](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh): inspect before running; checks prerequisites without installation or credentials.
+
+## Optional
+
+- [Repository instructions](https://redhat-et.github.io/openclaw-enterprise-onboarding/AGENTS.md): contributor workflow and public-content boundaries.
+- [2026 reference research](https://redhat-et.github.io/openclaw-enterprise-onboarding/AGENT_SETUP_REFERENCES.md): 100k-star examples and format distinctions.
+- [Local architecture](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/architecture.svg): platform boundaries and remote inference.
+- [Credential flow](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/credential-flow.svg): model Secret/IAM and separate administrator/transport credentials.
+- [Upstream local profile](https://github.com/openclaw/openclaw-enterprise/blob/affac2bfc1370e590e6da570bcaaad4a207c9f09/docs/guides/deploy/local-kubernetes-development.md): contract at the tested pin.

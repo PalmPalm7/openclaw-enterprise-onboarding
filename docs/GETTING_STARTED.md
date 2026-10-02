@@ -20,6 +20,24 @@ Follow [the pinned source block](GETTING_STARTED_AGENTS.md#clone-the-tested-sour
 
 **Expected:** a clean checkout and Docker responding from your new `oce-onboarding` VM.
 
+### Prefer your coding agent to do the setup?
+
+Paste into Claude Code, Codex or Cursor with terminal access:
+
+```text
+Read https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md
+and set up OCE on this Mac using the linked runbook. Inspect prerequisites,
+use an isolated owned VM/cluster, preserve existing services, and verify
+HTTPS login and a real model reply. Use my approved model/budget and private
+key-file input. Ask only for missing inputs; never request a key in chat.
+```
+
+[Agent discovery](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms.txt) · [Complete packet](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms-full.txt). The agent follows this same five-step guide. Click a diagram to open it at full size.
+
+[![Agent-led setup from instructions to a verified model reply](assets/setup-flow.svg)](assets/setup-flow.svg)
+
+[![Owned local OCE architecture and remote model inference](assets/architecture.svg)](assets/architecture.svg)
+
 ## 3. Install OCE
 
 Run [the installation block](GETTING_STARTED_AGENTS.md#4-install-the-kubernetes-profile) in the same terminal.

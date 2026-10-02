@@ -13,6 +13,10 @@ Apple Silicon Mac → isolated Colima Linux VM → Docker → k3d/K3s
 
 OCE means **OpenClaw Enterprise**; OCC means **OpenClaw Control Plane**. The Mac runs the platform and tools; provider models run remotely.
 
+[![Local architecture with VM, Docker, k3d/K3s, OCE services, tenant Agent and remote inference boundaries](assets/architecture.svg)](assets/architecture.svg)
+
+Click any diagram to open its full-size SVG; the text remains the executable reference.
+
 | Input | Historical working selection |
 | --- | --- |
 | OCE source | `affac2bfc1370e590e6da570bcaaad4a207c9f09` |
@@ -30,6 +34,14 @@ Select Kubernetes compute and control plane with **`Sandbox Driver=none`**. This
 Do not substitute `main`, `latest`, a new guest kernel or standalone OpenShell and reuse the historical acceptance claim. See [upstream profile contract](https://github.com/openclaw/openclaw-enterprise/blob/affac2bfc1370e590e6da570bcaaad4a207c9f09/docs/guides/deploy/local-kubernetes-development.md). Kubernetes-only startup uses its pinned K3s image; the K3s channel override at this revision applies to a different profile.
 
 ## 2. Prepare the tools and source
+
+### Agent-led setup entry point
+
+If an operator asks your coding agent to install OCE, read [setup.md](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md) and continue this runbook in order. The [llms.txt index](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms.txt) discovers the files; [llms-full.txt](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms-full.txt) combines the brief and runbook for one fetch. These files guide execution; they do not execute on retrieval. Use terminal-capable Claude Code, Codex, Cursor or an equivalent agent.
+
+Read the [preflight script](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh) before running it. From this onboarding repository use `bash scripts/check-setup.sh`. It checks host/tool presence, selected version constraints, storage and occupied ports without installation or credentials; full tool comparisons and VM/platform acceptance remain necessary.
+
+[![Agent execution flow from discovery and inspection to owned installation and verification](assets/setup-flow.svg)](assets/setup-flow.svg)
 
 Install Git, Node >=24, pnpm `11.15.1`, Go `1.27`, Docker CLI, native Colima, k3d, kubectl and Helm. Use native arm64 tools on Apple Silicon. Docker CLI must support `docker image save --platform`; the observed CLI 29 worked, whereas CLI 27 did not. Kubernetes-only startup does not need Docker Compose.
 
@@ -131,6 +143,10 @@ Follow [upstream browser trust instructions](https://github.com/openclaw/opencla
 Sign in as `admin@development.openclaw.invalid` using the generated **Administrator password file**, ordinarily `initial-admin-password` in private state. Read it locally without logged output. Password login uses HTTPS; port 3300 is the separate service-key API. HTTP password sign-in can correctly fail with origin/CSRF 403; do not weaken that policy.
 
 ## 6. Deploy the upstream first Agent
+
+[![Credential flow showing model Secret and IAM separately from administrator and transport authentication](assets/credential-flow.svg)](assets/credential-flow.svg)
+
+The model key, administrator service key, HTTPS console password and native Agent transport credential have distinct purposes. The diagram follows the direct OpenAI starter; optional hosted GLM uses its separately configured Anthropic-compatible provider and model Secret.
 
 Use a valid **direct OpenAI credential** and explicitly select an available, budget-approved model by its plain ID. This is [upstream's documented prompt-only workflow](https://github.com/openclaw/openclaw-enterprise/blob/affac2bfc1370e590e6da570bcaaad4a207c9f09/docs/guides/first-agent.md), not the historical hosted-GLM task used locally.
 

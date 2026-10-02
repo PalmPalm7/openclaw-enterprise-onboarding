@@ -22,6 +22,24 @@ The profile uses **`Sandbox Driver=none`**. Full OpenShell integration, other ho
 
 ## Reproduction checklist
 
+### Give the setup to your coding agent
+
+Paste this into **Claude Code, Codex or Cursor** with local terminal access:
+
+```text
+Read https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md
+and follow its linked runbook to set up OCE on this Mac. Inspect prerequisites
+first, use an owned isolated VM/cluster, preserve existing services, and verify
+HTTPS sign-in plus a real Agent model reply. Use my approved model and budget;
+ask only for missing inputs, never for a credential pasted into chat.
+```
+
+Agent discovery: [llms.txt](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms.txt). One-file packet: [llms-full.txt](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms-full.txt). The [read-only preflight](scripts/check-setup.sh) checks prerequisites; installation commands remain in the runbook. Fetching a file does not run setup.
+
+![Agent setup flow: instructions, inspection, owned installation, private model configuration and verification](docs/assets/setup-flow.svg)
+
+### Record what passed
+
 1. Record the exact source, tool versions, VM resources and runtime image digest.
 2. Confirm platform readiness and HTTPS sign-in.
 3. Deploy one Agent and verify a reply with an authorized, explicitly selected model.
@@ -29,6 +47,16 @@ The profile uses **`Sandbox Driver=none`**. Full OpenShell integration, other ho
 5. Report the outcome and remaining gaps without publishing secrets or internal infrastructure.
 
 Use [CONTRIBUTING.md](CONTRIBUTING.md) for improvements. Keep both guide versions synchronized.
+
+### Architecture
+
+![Local OCE architecture: owned Colima Docker VM, k3d/K3s platform and Agent Pods, and remote model inference](docs/assets/architecture.svg)
+
+The platform and Agent tools run locally. Inference runs at the approved provider. `Sandbox Driver=none` leaves OpenShell outside this profile. The [credential diagram](docs/assets/credential-flow.svg) separates model access from administrator and Agent transport authentication.
+
+### Why these files
+
+The 2026 pattern is **`llms.txt` for discovery → `setup.md` for the requested task → `AGENTS.md` for repository instructions**, with readable scripts for bounded automation. It is not one universal executable setup standard. Current 100k-star examples include Next.js, shadcn/ui and Supabase; dated sources and the star snapshot are in [the reference research](docs/AGENT_SETUP_REFERENCES.md).
 
 ## Build the documentation site
 
@@ -40,4 +68,4 @@ npm run check
 python3 -m http.server 8000 --directory _site
 ```
 
-Open `http://localhost:8000` and inspect both guide views. The static build reads only the two public Markdown guides; it does not contact a model provider or deploy OCE. GitHub Pages publishes the same generated site.
+Open `http://localhost:8000` and inspect both guide views. The static build publishes an explicit allowlist of public guides, agent setup files, the read-only preflight and static diagrams. It does not contact a model provider or deploy OCE. GitHub Pages publishes the same generated site.

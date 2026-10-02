@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="1336" viewBox="0 0 520 1336" role="img" aria-labelledby="title description">
+  <title id="title">OpenClaw Enterprise local development architecture</title>
+  <desc id="description">An Apple Silicon Mac runs a browser and terminal. An owned Colima Linux virtual machine contains Docker, which hosts the k3d-managed K3s cluster. The cluster contains the Envoy Gateway and cert-manager browser entry, the OCE API, worker and PostgreSQL platform, and a tenant Agent Pod running embedded OpenClaw. The Agent calls an approved remote model provider through HTTPS. Sandbox Driver is none, so OpenShell is absent. Dedicated Codex sandbox preflight is a separate startup check, not the starter Agent's execution mode.</desc>
+  <!-- Public source baseline: openclaw/openclaw-enterprise affac2bfc1370e590e6da570bcaaad4a207c9f09; docs/guides/deploy/local-kubernetes-development.md; docs/guides/first-agent.md. -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#526777"/></marker>
+  </defs>
+  <style>
+    text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#162a3b}
+    .heading{font-size:20px;font-weight:700}.label{font-size:17px;font-weight:650}.body{font-size:16px}.small{font-size:14px;fill:#526777}
+    .flow{fill:none;stroke:#526777;stroke-width:2.3;marker-end:url(#arrow)}.control{stroke-dasharray:6 5}
+  </style>
+  <rect width="520" height="1336" rx="12" fill="#ffffff"/>
+  <rect x="12" y="14" width="496" height="1114" rx="16" fill="#f6f8fa" stroke="#879ba9" stroke-width="2"/>
+  <text x="32" y="48" class="heading">Your Apple Silicon Mac</text>
+  <rect x="32" y="76" width="216" height="76" rx="10" fill="#ffffff" stroke="#b5c3cd"/>
+  <text x="140" y="106" class="label" text-anchor="middle">Browser</text>
+  <text x="140" y="132" class="body" text-anchor="middle">HTTPS console</text>
+  <rect x="266" y="76" width="222" height="76" rx="10" fill="#ffffff" stroke="#b5c3cd"/>
+  <text x="377" y="106" class="label" text-anchor="middle">Terminal + OCC CLI</text>
+  <text x="377" y="132" class="body" text-anchor="middle">Build and launch</text>
+  <rect x="32" y="182" width="456" height="900" rx="14" fill="#edf4f8" stroke="#688ca4" stroke-width="2"/>
+  <text x="52" y="212" class="label">Owned Colima Linux VM</text>
+  <rect x="50" y="236" width="420" height="792" rx="12" fill="#f7fbfd" stroke="#90adbf" stroke-width="2"/>
+  <text x="70" y="266" class="label">Docker engine</text>
+  <rect x="68" y="292" width="384" height="694" rx="12" fill="#ffffff" stroke="#5c839a" stroke-width="2"/>
+  <text x="88" y="322" class="label">k3d-managed K3s cluster</text>
+  <text x="88" y="345" class="small">K3s runs inside Docker node containers</text>
+  <rect x="88" y="368" width="344" height="88" rx="10" fill="#eef3fa" stroke="#9ab1c7"/>
+  <text x="260" y="398" class="label" text-anchor="middle">Envoy Gateway</text>
+  <text x="260" y="423" class="body" text-anchor="middle">HTTPS route to the platform</text>
+  <text x="260" y="445" class="small" text-anchor="middle">cert-manager supplies certificates</text>
+  <path class="flow" d="M 140 152 L 140 174 L 20 174 L 20 408 L 88 408"/>
+  <path class="flow control" d="M 377 152 L 377 182"/>
+  <path class="flow" d="M 260 456 L 260 488"/>
+  <rect x="88" y="488" width="344" height="218" rx="10" fill="#fff6f1" stroke="#cb9b81"/>
+  <text x="260" y="516" class="label" text-anchor="middle">OCE platform · oce-system</text>
+  <rect x="104" y="537" width="146" height="72" rx="8" fill="#ffffff" stroke="#d4af9a"/>
+  <text x="177" y="568" class="label" text-anchor="middle">OCC API</text>
+  <text x="177" y="590" class="small" text-anchor="middle">Control plane</text>
+  <rect x="267" y="537" width="149" height="72" rx="8" fill="#ffffff" stroke="#d4af9a"/>
+  <text x="341" y="568" class="label" text-anchor="middle">OCC worker</text>
+  <text x="341" y="590" class="small" text-anchor="middle">Deployment jobs</text>
+  <rect x="160" y="650" width="200" height="40" rx="8" fill="#ffffff" stroke="#d4af9a"/>
+  <text x="260" y="676" class="label" text-anchor="middle">PostgreSQL</text>
+  <path class="flow" d="M 177 609 L 177 636 L 210 636 L 210 650"/>
+  <path class="flow" d="M 341 609 L 341 636 L 310 636 L 310 650"/>
+  <path class="flow control" d="M 260 706 L 260 770"/>
+  <text x="279" y="741" class="small">Deploys workload</text>
+  <rect x="88" y="770" width="344" height="128" rx="10" fill="#edf7f1" stroke="#86b39a"/>
+  <text x="260" y="802" class="label" text-anchor="middle">Tenant Agent Pod</text>
+  <text x="260" y="831" class="body" text-anchor="middle">Embedded OpenClaw gateway</text>
+  <text x="260" y="858" class="body" text-anchor="middle">Prompt-only first Agent</text>
+  <text x="260" y="882" class="small" text-anchor="middle">Models are selected separately</text>
+  <text x="91" y="932" class="label">Sandbox Driver = none</text>
+  <text x="91" y="958" class="body">OpenShell is not installed</text>
+  <text x="68" y="1060" class="small">Dedicated Codex sandbox preflight is separate.</text>
+  <path class="flow" d="M 432 835 L 478 835 L 478 1165 L 260 1165 L 260 1200"/>
+  <rect x="76" y="1138" width="340" height="28" rx="5" fill="#ffffff"/>
+  <text x="246" y="1158" class="body" text-anchor="middle">HTTPS model requests</text>
+  <rect x="88" y="1200" width="344" height="94" rx="12" fill="#f3edf8" stroke="#ad91bd" stroke-width="2"/>
+  <text x="260" y="1235" class="label" text-anchor="middle">Approved model provider</text>
+  <text x="260" y="1263" class="body" text-anchor="middle">Inference runs remotely</text>
+  <text x="260" y="1319" class="small" text-anchor="middle">Local development profile; not production qualification.</text>
+</svg>
