@@ -20,4 +20,6 @@ Basic onboarding succeeds when platform readiness, HTTPS sign-in, the exact Agen
 
 ## Upstream product changes
 
-This companion repository does not own OCE's architecture or implementation. Send product fixes to [openclaw/openclaw-enterprise](https://github.com/openclaw/openclaw-enterprise) using its contribution policy. Link the relevant public source revision when updating this guide; do not silently replace a tested pin with `main` or `latest`.
+This companion repository does not own OCE's architecture or implementation. Send product fixes to [openclaw/openclaw-enterprise](https://github.com/openclaw/openclaw-enterprise) using its contribution policy. New exploration starts from current `main`; record its resolved SHA and derive tool versions from that checkout's manifests. Link the reviewed public revision when updating commands, and retain historical results with their original SHA. A source review or a successful older run does not establish fresh runtime acceptance.
+
+On a company-managed device, keep endpoint protection, host policy and existing services intact. Describe a blocked prerequisite and the approved alternative; never publish a security-control bypass as an onboarding fix. Keep gateway endpoint/account details and protected diagnostic receipts private.

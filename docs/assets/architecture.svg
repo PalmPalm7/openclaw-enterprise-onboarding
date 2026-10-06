@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="1336" viewBox="0 0 520 1336" role="img" aria-labelledby="title description">
   <title id="title">OpenClaw Enterprise local development architecture</title>
-  <desc id="description">An Apple Silicon Mac runs a browser and terminal. An owned Colima Linux virtual machine contains Docker, which hosts the k3d-managed K3s cluster. The cluster contains the Envoy Gateway and cert-manager browser entry, the OCE API, worker and PostgreSQL platform, and a tenant Agent Pod running embedded OpenClaw. The Agent calls an approved remote model provider through HTTPS. Sandbox Driver is none, so OpenShell is absent. Dedicated Codex sandbox preflight is a separate startup check, not the starter Agent's execution mode.</desc>
-  <!-- Public source baseline: openclaw/openclaw-enterprise affac2bfc1370e590e6da570bcaaad4a207c9f09; docs/guides/deploy/local-kubernetes-development.md; docs/guides/first-agent.md. -->
+  <desc id="description">An Apple Silicon Mac runs a browser and terminal. This diagram shows the documented Colima/Lima Linux virtual machine with Docker engine path; other approved existing runtimes require independent verification. Docker hosts the k3d-managed K3s node containers. The cluster contains the Envoy Gateway and cert-manager browser entry, the OCE API and worker, PostgreSQL StatefulSet and persistent volume claim, and a tenant Agent Pod running embedded OpenClaw. The Agent calls an approved remote model provider through HTTPS. Sandbox Driver is none, so OpenShell is absent. Dedicated Codex sandbox preflight is a separate startup check, not the starter Agent's execution mode.</desc>
+  <!-- Public source review: openclaw/openclaw-enterprise 8023db20d5a7cfa84dbfe734d43898fc8cc354ce; docs/guides/deploy/local-kubernetes-development.md; docs/guides/first-agent.md. -->
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#526777"/></marker>
   </defs>
@@ -20,7 +20,7 @@
   <text x="377" y="106" class="label" text-anchor="middle">Terminal + OCC CLI</text>
   <text x="377" y="132" class="body" text-anchor="middle">Build and launch</text>
   <rect x="32" y="182" width="456" height="900" rx="14" fill="#edf4f8" stroke="#688ca4" stroke-width="2"/>
-  <text x="52" y="212" class="label">Owned Colima Linux VM</text>
+  <text x="52" y="212" class="label">Owned Colima/Lima Linux VM</text>
   <rect x="50" y="236" width="420" height="792" rx="12" fill="#f7fbfd" stroke="#90adbf" stroke-width="2"/>
   <text x="70" y="266" class="label">Docker engine</text>
   <rect x="68" y="292" width="384" height="694" rx="12" fill="#ffffff" stroke="#5c839a" stroke-width="2"/>
@@ -42,7 +42,7 @@
   <text x="341" y="568" class="label" text-anchor="middle">OCC worker</text>
   <text x="341" y="590" class="small" text-anchor="middle">Deployment jobs</text>
   <rect x="160" y="650" width="200" height="40" rx="8" fill="#ffffff" stroke="#d4af9a"/>
-  <text x="260" y="676" class="label" text-anchor="middle">PostgreSQL</text>
+  <text x="260" y="676" class="label" text-anchor="middle">PostgreSQL + PVC</text>
   <path class="flow" d="M 177 609 L 177 636 L 210 636 L 210 650"/>
   <path class="flow" d="M 341 609 L 341 636 L 310 636 L 310 650"/>
   <path class="flow control" d="M 260 706 L 260 770"/>

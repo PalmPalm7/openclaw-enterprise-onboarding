@@ -9,7 +9,7 @@ Read `setup.md`, then `docs/GETTING_STARTED_AGENTS.md`, and carry out only the o
 ## Keep two versions
 
 - `docs/GETTING_STARTED.md` is the concise human guide: next action first, five onboarding steps, commands linked to the runbook, explicit expected results.
-- `docs/GETTING_STARTED_AGENTS.md` is the detailed operator/agent runbook: exact inputs, source pins, private credential handling, acceptance, failure diagnosis and lifecycle.
+- `docs/GETTING_STARTED_AGENTS.md` is the detailed operator/agent runbook: exact inputs, current source selection, private credential handling, acceptance, failure diagnosis and lifecycle.
 - Update both when prerequisites, commands, models or capability boundaries change. Markdown is the authored source; keep any generated site synchronized through its build.
 - Keep execution/discovery links synchronized. Graphs are self-contained SVGs in `docs/assets/`; do not add remote scripts/fonts or executable SVG content.
 
@@ -17,7 +17,7 @@ Read `setup.md`, then `docs/GETTING_STARTED_AGENTS.md`, and carry out only the o
 
 Distinguish historical local verification, source-reviewed recipe and fresh reproduction. A login, Ready platform, successful resource creation or model's claimed tool action does not establish genuine Agent task acceptance. Do not label this development profile production-ready or claim full OpenShell integration.
 
-Use pinned public upstream source links for baseline contracts. Keep upstream source checkout instructions separate from instructions for editing this onboarding repository. Read upstream `AGENTS.md` before modifying that product.
+Use current upstream `main` for new exploration and record its resolved SHA per installation. Pinned public source links document the reviewed contract and historical evidence; they do not require a stale checkout. Recheck manifests and changed commands when `main` advances. Keep upstream source checkout instructions separate from instructions for editing this onboarding repository. Read upstream `AGENTS.md` before modifying that product.
 
 ## Publish only public-safe material
 

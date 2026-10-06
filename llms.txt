@@ -2,9 +2,9 @@
 
 > Public local-development onboarding maintained by redhat-et: a concise human guide, a detailed agent runbook and an execution brief for an operator's coding agent.
 
-Scope: Apple Silicon Mac, owned Colima Linux VM, Docker and k3d/K3s. Source is pinned to affac2bfc1370e590e6da570bcaaad4a207c9f09. The October 1, 2026 platform and hosted-GLM task passed; this portable recipe is source-reviewed, not reproduced on a second machine. Sandbox Driver=none does not qualify OpenShell or production. Models run remotely.
+Scope: Apple Silicon Mac, approved Linux VM/engine and an owned k3d/K3s installation. The historical Colima/Docker platform and hosted-GLM tool task passed October 1, 2026 at affac2bfc1370e590e6da570bcaaad4a207c9f09. New exploration uses current upstream main and records the resolved SHA. An October 7 CSB run at 8023db20d5a7cfa84dbfe734d43898fc8cc354ce passed platform/database checks, HTTPS sign-in and a GPT-6 Luna nonce/arithmetic response with maximum effort configured; the same Agent/revision appeared in the console. Tools were not exercised. Browser access used an approved exact local certificate exception, without CA import/system trust claims. Sandbox Driver=none does not qualify OpenShell or production. Models run remotely.
 
-Start with setup.md when asked to install. This index provides documentation discovery, not executable installation. Respect the operator's request, local instructions, explicit model/budget and private credential handling.
+Start with setup.md when asked to install. This index provides documentation discovery, not executable installation. Respect the operator's request, local instructions, company security policy, explicit model/budget and private credential handling. The direct first-Agent helper does not configure arbitrary AI gateways or reasoning effort.
 
 ## Setup
 
@@ -20,4 +20,5 @@ Start with setup.md when asked to install. This index provides documentation dis
 - [2026 reference research](https://redhat-et.github.io/openclaw-enterprise-onboarding/AGENT_SETUP_REFERENCES.md): 100k-star examples and format distinctions.
 - [Local architecture](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/architecture.svg): platform boundaries and remote inference.
 - [Credential flow](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/credential-flow.svg): model Secret/IAM and separate administrator/transport credentials.
-- [Upstream local profile](https://github.com/openclaw/openclaw-enterprise/blob/affac2bfc1370e590e6da570bcaaad4a207c9f09/docs/guides/deploy/local-kubernetes-development.md): contract at the tested pin.
+- [Gateway configuration](https://redhat-et.github.io/openclaw-enterprise-onboarding/GETTING_STARTED_AGENTS.md#openai-compatible-gateway-configuration-gpt-6-luna-maximum-effort): GPT-6 Luna/maximum-effort native Configuration, protected model Secret and complete linked deployment flow; CSB HTTPS sign-in and nonce/arithmetic model response verified, filesystem tools not exercised.
+- [Upstream local profile](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/deploy/local-kubernetes-development.md): current upstream runtime requirements; record the resolved source revision for each run.
