@@ -4,28 +4,33 @@ set -uo pipefail
 failures=0
 source_path=''
 docker_host=''
+podman_host=''
 engine=''
 require_colima=0
+require_lima=0
 
 usage() {
-  printf 'Usage: bash scripts/check-setup.sh [--source /path/to/openclaw-enterprise] [--engine docker|podman] [--docker-host unix:///path/to/docker.sock] [--require-colima]\n'
+  printf 'Usage: bash scripts/check-setup.sh [--source /path/to/openclaw-enterprise] [--engine docker|podman] [--docker-host unix:///path/to/docker.sock | --podman-host unix:///path/to/podman.sock] [--require-lima] [--require-colima]\n'
   printf 'Without --engine, installed engines are inventoried without selecting or requiring one.\n'
   printf 'Add --require-colima only when explicitly choosing the Colima VM path.\n'
+  printf 'Add --require-lima when explicitly choosing the Lima VM path.\n'
   printf 'Without --source, pnpm/Go versions are reported but source compatibility is not checked.\n'
-  printf 'Docker daemon access requires both --engine docker and --docker-host. Podman daemon/rootful acceptance remains manual.\n'
+  printf 'Daemon inspection requires --engine and its matching explicit local socket argument.\n'
   printf 'Remote endpoints and implicit runtime connections are not contacted.\n'
 }
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --source|--docker-host|--engine)
+    --source|--docker-host|--podman-host|--engine)
       if [ "$#" -lt 2 ] || [ -z "$2" ]; then usage >&2; exit 2; fi
       case "$1" in
         --source) source_path=$2;;
         --docker-host) docker_host=$2;;
+        --podman-host) podman_host=$2;;
         --engine) engine=$2;;
       esac
       shift 2;;
     --require-colima) require_colima=1; shift;;
+    --require-lima) require_lima=1; shift;;
     --help|-h) usage; exit 0;;
     *) usage >&2; exit 2;;
   esac
@@ -42,6 +47,16 @@ if [ -n "$docker_host" ]; then
   case "$docker_host" in
     unix:///*) :;;
     *) printf 'GAP   --docker-host must select a local Unix socket; no network endpoint was contacted.\n'; exit 2;;
+  esac
+fi
+if [ -n "$podman_host" ]; then
+  if [ "$engine" != podman ]; then
+    printf 'GAP   --podman-host requires an explicit --engine podman selection; no daemon was contacted.\n'
+    exit 2
+  fi
+  case "$podman_host" in
+    unix:///*) :;;
+    *) printf 'GAP   --podman-host must select a local Unix socket; no network endpoint was contacted.\n'; exit 2;;
   esac
 fi
 
@@ -102,6 +117,7 @@ for tool in git bash python3 node pnpm go k3d kubectl helm; do
 done
 if [ -n "$engine" ]; then check_command "$engine"; fi
 if [ "$require_colima" -eq 1 ]; then check_command colima; fi
+if [ "$require_lima" -eq 1 ]; then check_command limactl; fi
 
 node_requirement='>=24'
 pnpm_requirement=''
@@ -214,6 +230,10 @@ elif [ "$require_colima" -eq 0 ]; then
   printf 'NOTE  Colima is absent; it is needed only if choosing to create a Colima VM.\n'
 fi
 if command -v limactl >/dev/null 2>&1; then
+  if lima_version=$(run_bounded limactl --version 2>/dev/null); then
+    printf 'INFO  Installed %s\n' "$lima_version"
+  elif [ "$require_lima" -eq 1 ]; then gap 'Selected Lima CLI version check failed or timed out.';
+  else printf 'NOTE  Optional Lima CLI version check failed or timed out.\n'; fi
   if instances=$(run_bounded limactl list --format '{{.Name}} (status={{.Status}})' 2>/dev/null); then
     printf 'INFO  Existing Lima instances (unchanged):\n%s\n' "${instances:-  none observed}"
   else printf 'NOTE  Lima instance inventory failed or timed out; inspect it manually.\n'; fi
@@ -228,8 +248,47 @@ if command -v podman >/dev/null 2>&1; then
   else printf 'NOTE  Podman machine inventory failed or timed out; inspect it manually.\n'; fi
 else printf 'INFO  Podman CLI is not installed.\n'; fi
 if [ "$engine" = podman ]; then
-  printf 'NOTE  Podman daemon, rootful mode, cpuset/cgroup support and host-reachable API socket are not checked.\n'
-  printf 'NOTE  Qualify the explicitly selected approved Podman connection with the upstream requirements; this preflight did not contact the current connection.\n'
+  if [ -n "$podman_host" ]; then
+    if [ ! -S "${podman_host#unix://}" ]; then
+      gap 'Selected Podman socket does not exist; verify the approved runtime before repeating the daemon check.'
+    elif daemon=$(run_bounded env -u CONTAINER_CONNECTION -u CONTAINER_HOST -u CONTAINER_PROXY -u DOCKER_CONTEXT -u DOCKER_HOST podman --remote --url "$podman_host" info --format json 2>/dev/null); then
+      if report=$(printf '%s' "$daemon" | run_bounded python3 -c '
+import json, re, sys
+try:
+    info = json.load(sys.stdin)
+    host = info["host"]
+    issues = []
+    if host.get("security", {}).get("rootless") is not False:
+        issues.append("selected Podman service must report rootless=false")
+    if host.get("cgroupVersion") != "v2":
+        issues.append("selected Podman service must report cgroup v2")
+    if "cpuset" not in host.get("cgroupControllers", []):
+        issues.append("selected Podman service must report the cpuset controller")
+    if host.get("os") != "linux" or host.get("arch") not in ("arm64", "aarch64"):
+        issues.append("selected Podman service must run Linux on ARM64 for this recipe")
+    if issues:
+        print("; ".join(issues))
+        sys.exit(1)
+    version = str(info.get("version", {}).get("Version", "unknown"))
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?", version):
+        version = "unknown"
+    cpus = host.get("cpus")
+    memory = host.get("memTotal")
+    if type(cpus) is not int or type(memory) is not int or cpus < 1 or memory < 1:
+        raise ValueError("invalid capacity")
+    print(f"Podman {version}; linux/arm64; rootful; cgroup=v2; cpuset present; memory={memory} bytes; CPUs={cpus}")
+except (KeyError, TypeError, ValueError, AttributeError):
+    print("selected Podman service returned incomplete or invalid host information")
+    sys.exit(1)
+' 2>/dev/null); then
+        printf 'OK    Explicitly selected local Podman service: %s\n' "$report"
+      else gap "${report:-Selected Podman host metadata validation failed or timed out.}"; fi
+    else gap 'Selected local Podman service did not answer within five seconds.'; fi
+    printf 'NOTE  Engine metadata does not prove k3d startup, image builds/imports, mounted state, forwarding or Agent sandbox acceptance; qualify those during installation.\n'
+  else
+    printf 'NOTE  Podman daemon, rootful mode, cpuset/cgroup support and host-reachable API socket are not checked.\n'
+    printf 'NOTE  Pass --podman-host with the intentionally selected local socket; this preflight did not contact the current connection.\n'
+  fi
 fi
 if [ -z "$engine" ]; then
   printf 'NOTE  Engine compatibility and daemon acceptance are pending; no daemon was contacted.\n'

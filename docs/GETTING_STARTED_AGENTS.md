@@ -2,20 +2,39 @@
 
 **Execute the preflight in Section 2, then follow the sections in order.** Use the [human guide](GETTING_STARTED.md) for the five-step overview.
 
-Updated October 7, 2026. New exploration starts from current upstream `main`; record its resolved SHA for each installation. A fresh CSB Mac run at `8023db20d5a7cfa84dbfe734d43898fc8cc354ce` passed official startup/network/native sandbox checks, PostgreSQL readiness, HTTPS administrator sign-in and a genuine embedded GPT-6 Luna gateway nonce/arithmetic response with maximum effort configured. The console showed the matching Agent/revision and successful deployment; its persisted status alone did not establish live serving. The separate model check did. Tools were not exercised, effort wire data was not captured and billing was not measured. Browser access used an operator-approved exact local certificate exception; no CA import/system trust change is claimed. The October 1 embedded hosted-GLM tool task remains historical evidence on older source. Sensitive receipts are not published. Qualify each new installation independently.
+Updated October 7, 2026. This guide recommends an owned Lima VM with rootful Podman for new onboarding, as selected and tested for this work; this is not a company-wide runtime policy. The CSB Mac reproduction passed official startup/network/native Codex checks, PostgreSQL/API readiness, HTTPS administrator sign-in and a genuine embedded GPT-6 Luna gateway nonce/arithmetic response with maximum effort configured. It used the then-current `main` baseline `e5e206c2a9de01601100c06581cc32f73a174456` plus both repairs in [draft PR #1543](https://github.com/openclaw/openclaw-enterprise/pull/1543), frozen at `a6bfbc985943bd79f49def459fdac13f18e06861`. The unmodified baseline failed; this is **main plus recorded repairs**, not plain-main acceptance. Full cluster/VM stop and resume preserved platform/database readiness, the exact Agent revision/configuration/image and HTTPS browser access; resume verification sent no new test prompt.
+
+New exploration starts from current upstream `main`; record its resolved SHA and any still-needed repair. The model test verified the nonce and **437** response, matching Ready Pod and succeeded revision. Filesystem tools were denied and not exercised; effort wire data and billing were not measured. Browser access used an operator-approved exact local certificate exception; no CA import/system trust change is claimed. SELinux remained Enforcing, with no DNS override or guest sysctl/managed-host relaxation. Official scoped node seccomp preparation passed. Earlier Colima/Docker runs at `8023db20d5a7cfa84dbfe734d43898fc8cc354ce` and the October 1 hosted-GLM tool task remain historical evidence. Sensitive receipts are not published. Qualify each new installation independently.
 
 ## 1. Select the development profile
 
 ```text
-Apple Silicon Mac → selected Linux VM → selected container engine → k3d/K3s
+Apple Silicon Mac → Lima Linux VM → rootful Podman → k3d/K3s
   → PostgreSQL + OCE API/worker + Envoy Gateway/cert-manager → Agent Pods
 ```
 
 OCE means **OpenClaw Enterprise**; OCC means **OpenClaw Control Plane**. The Mac runs the platform and tools; provider models run remotely.
 
-[![Tested Colima/Docker example with k3d/K3s, OCE services, tenant Agent and remote inference boundaries](assets/architecture.svg)](assets/architecture.svg)
+[![Recommended Lima/rootful-Podman path with k3d/K3s, OCE services, tenant Agent and remote inference boundaries](assets/architecture.svg)](assets/architecture.svg)
 
 Click any diagram to open its full-size SVG; the text remains the executable reference.
+
+| Input | October 7 Lima/Podman verified onboarding receipt |
+| --- | --- |
+| OCE source baseline | `e5e206c2a9de01601100c06581cc32f73a174456`; unmodified runtime build failed |
+| Source compatibility repairs | [Draft PR #1543](https://github.com/openclaw/openclaw-enterprise/pull/1543), frozen at `a6bfbc985943bd79f49def459fdac13f18e06861`; helper copy and Podman archive/direct import |
+| Owned VM | Lima `2.2.1`; VZ/aarch64; 6 CPUs; 14 GiB RAM; 80 GiB disk |
+| Observed guest | Fedora `44`; kernel `6.19.10-300.fc44.aarch64` |
+| Podman | Host CLI `5.4.1`; guest server `5.8.7`; rootful; cgroup v2 with `cpuset` |
+| Kubernetes | K3s `v1.36.4+k3s1`; selected by the official launcher, not an independent installation pin |
+| Storage/network | Overlay at `/var/lib/containers/storage` on the guest root disk; netavark |
+| Guest security/mount | SELinux Enforcing; native user namespace check passed without sysctl changes; only the owned OCE work directory mounted writable at its matching absolute path |
+| Platform/browser | Official launcher/network/native Codex checks; PostgreSQL StatefulSet/PVC/query; API/default Namespace readiness; verified TLS and HTTPS sign-in |
+| Model | Embedded `openai/gpt-6-luna`, OpenAI Responses, `thinkingDefault=max`; nonce and **437** response; exact succeeded revision and Ready Pod; no filesystem tools |
+| Pause/resume | k3d stop → Lima stop/start → k3d start; database/platform and exact Agent state/image/Pod plus browser access persisted; no new test prompt |
+| Handoff | Smoke Agent stopped after verification; platform/console and saved Configuration retained |
+
+k3d documents its [Podman integration as experimental](https://k3d.io/stable/usage/advanced/podman/). The recommendation covers this owned development recipe and its recorded acceptance, rather than universal Podman compatibility.
 
 | Input | October 1 historical working selection |
 | --- | --- |
@@ -31,7 +50,7 @@ Click any diagram to open its full-size SVG; the text remains the executable ref
 
 Select Kubernetes compute and control plane with **`Sandbox Driver=none`**. This profile does not install or qualify OpenShell enforcement/credential brokering. Native Codex workspace sandboxing is a separate boundary. Default startup selects a Compose preview that cannot deploy Agents; the Compose/Kubernetes hybrid also differs from this recipe.
 
-The table records history, not mandatory install versions. Prefer current `main` while OCE is changing quickly: older commits can miss startup and database fixes. Record the new SHA, derive its toolchain from `package.json`/`go.mod`, and hold that checkout fixed throughout one installation. Recheck [current upstream setup](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/quickstart.md) if `main` advances beyond the [reviewed profile contract](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/local-kubernetes-development.md). Pinned links below identify reviewed evidence; clone commands do not pin the historical SHA. Kubernetes-only startup selects its own K3s image; do not independently choose a K3s channel from another profile.
+The table records history, not mandatory install versions. Prefer current `main` while OCE is changing quickly: older commits can miss startup and database fixes. Record the new SHA, derive its toolchain from `package.json`/`go.mod`, and hold that checkout fixed throughout one installation. Recheck [current upstream setup](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/quickstart.md) if `main` advances beyond the [reviewed profile contract](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/guides/deploy/local-kubernetes-development.md). Pinned links below identify reviewed evidence; clone commands do not pin the historical SHA. Kubernetes-only startup selects its own K3s image; do not independently choose a K3s channel from another profile.
 
 ### Company-managed/CSB boundary
 
@@ -45,15 +64,15 @@ The conditional guest sysctl in Section 9 changes a Linux VM's policy. Apply it 
 
 If an operator asks your coding agent to install OCE, read [setup.md](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md) and continue this runbook in order. The [llms.txt index](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms.txt) discovers the files; [llms-full.txt](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms-full.txt) combines the brief and runbook for one fetch. These files guide execution; they do not execute on retrieval. Use terminal-capable Claude Code, Codex, Cursor or an equivalent agent.
 
-Read the [preflight script](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh) before running it. From this onboarding repository use `bash scripts/check-setup.sh`. It inventories host/tools, storage, ports and existing runtime profiles without choosing an engine, installing or reading credentials. After cloning, add `--source '<OCE checkout>'` to check manifest requirements. Once the operator selects an approved engine, pass `--engine docker` or `--engine podman`. For selected Docker, add `--docker-host 'unix://<owned host socket>'` to check that local daemon. Add `--require-colima` only if choosing the optional new Colima example. Selected Podman CLI/machine inventory does not prove rootful mode, cgroups, host socket or daemon acceptance. The script changes no context and creates no VM/cluster.
+Read the [preflight script](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh) before running it. From this onboarding repository use `bash scripts/check-setup.sh`. It inventories host/tools, storage, ports and existing runtime profiles without choosing an engine, installing or reading credentials. After cloning, add `--source '<OCE checkout>'` to check manifest requirements. For the recommended Lima path, use `--engine podman --podman-host 'unix://<owned host socket>' --require-lima` after the VM is ready. This checks only that explicitly selected local socket, including rootful/cgroup prerequisites. Without `--podman-host`, selected Podman remains CLI/profile inventory and daemon acceptance is pending. For selected Docker use `--engine docker --docker-host 'unix://<owned host socket>'`; add `--require-colima` only for the optional historical Colima recipe. The script changes no context and creates no VM/cluster.
 
 [![Agent execution flow from discovery and inspection to owned installation and verification](assets/setup-flow.svg)](assets/setup-flow.svg)
 
-Install Git, Bash, Python 3 for the preflight, the checkout's Node/pnpm/Go versions, k3d, kubectl and Helm. Use native arm64 tools on Apple Silicon. The October 7 reviewed checkout requires Node >=24, pnpm `11.15.1` and Go >=`1.27`; verify these manifests again rather than assuming they remain current. For Docker, the CLI must support `docker image save --platform` and expose its Buildx plugin through `docker buildx version`. Kubernetes-only startup does not need Docker Compose. A standalone `docker-buildx version` does not establish that Docker can find the plugin.
+Install Git, Bash, Python 3 for the preflight, the checkout's Node/pnpm/Go versions, k3d, kubectl and Helm. For the recommended path install approved Lima and Podman host CLI packages. Use native arm64 tools on Apple Silicon. The current October 7 reviewed checkout requires Node >=24, pnpm `11.15.1` and Go >=`1.27`; verify these manifests again rather than assuming they remain current. For Docker, the CLI must support `docker image save --platform` and expose its Buildx plugin through `docker buildx version`. Kubernetes-only startup does not need Docker Compose. A standalone `docker-buildx version` does not establish that Docker can find the plugin.
 
 Check the **executable actually selected by `PATH`**, not just an installed package. For example, an approved Homebrew `node@24` installation can coexist with a stale default `node` symlink; in that case add its `bin` directory to this shell's `PATH` and rerun `node --version`. Do not replace global symlinks or install another toolchain before inspecting the existing one.
 
-Plan **45–90 minutes**, including first downloads, builds and Agent startup; this is an estimate. The October 7 working VM allocation is **6 CPUs / 14 GiB RAM / 60 GiB disk**; these are not minimums. The table retains the older 45 GiB disk as historical evidence. A 4 GiB engine allocation failed the runtime build. Separately allow roughly **60 GiB free host storage** for build headroom. At the reviewed revision an Agent Gateway requests `1792Mi` and has a `3Gi` limit; a dedicated Codex Harness adds a `768Mi` request and `6Gi` limit. Check [current sizing](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/deploy/installation-profiles.md) before creating more Agents.
+Plan **45–90 minutes**, including first downloads, builds and Agent startup; this is an estimate. The tested Lima recipe allocates **6 CPUs / 14 GiB RAM / 80 GiB disk**; these are not minimums. The earlier October 7 Colima run used a 60 GiB disk; the table retains its older 45 GiB disk as historical evidence. A 4 GiB engine allocation failed the runtime build. Separately allow roughly **60 GiB free host storage** for build headroom. At the reviewed revision an Agent Gateway requests `1792Mi` and has a `3Gi` limit; a dedicated Codex Harness adds a `768Mi` request and `6Gi` limit. Check [current sizing](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/deploy/installation-profiles.md) before creating more Agents.
 
 Inspect installed tool versions, Colima/Lima/Podman profiles, Docker contexts and ports **3300, 8444, 6444**. Choose distinct names/ports if occupied. Preserve existing default Docker/kubectl contexts and unrelated services. Do not auto-start every discovered runtime or auto-switch an existing Podman machine's mode.
 
@@ -83,7 +102,7 @@ pnpm --version
 go version
 ```
 
-Require clean source and tool versions compatible with the printed manifests. Record `git rev-parse HEAD` in the private receipt before installation. Read the checkout's `AGENTS.md` before source changes. This guide requires none. Use the declared pnpm version; do not edit the lockfile to fix a host toolchain failure. For an existing clean exploration checkout, update deliberately with `git pull --ff-only` before a fresh installation, then record the new SHA. Never pull or rebuild midway through a running installation and treat it as an upgrade.
+Require a clean initial checkout and tool versions compatible with the printed manifests. Record `git rev-parse HEAD` in the private receipt before installation. Read the checkout's `AGENTS.md` before source changes. Complete this section's toolchain, frozen dependency install and CLI build, then follow [the temporary Podman source repair](#temporary-repair-from-current-main) before Section 4 when either fix is absent from current `main`. It captures and reviews [draft PR #1543](https://github.com/openclaw/openclaw-enterprise/pull/1543), applies only the needed runtime Dockerfile and Go image-import changes and records the baseline plus patch identity. Both fixes passed the recorded Lima reproduction; each new installation still requires acceptance. Rebuild the CLI after the Go change. Use the declared pnpm version; do not edit the lockfile to fix a host toolchain failure. For an existing clean exploration checkout, update deliberately with `git pull --ff-only` before a fresh installation, then record the new SHA. Never pull or rebuild midway through a running installation and treat it as an upgrade.
 
 Use an existing matching package manager when available. If the declared pnpm needs an approved installation, this keeps it in the task's private tool prefix and preserves the global pnpm:
 
@@ -111,16 +130,67 @@ pnpm cli:build
 
 ## 3. Choose the VM and container engine
 
-Inspect existing runtime profiles, engine connections, architecture, available resources, mounts and ownership. Reuse an operator-selected approved environment that can host OCE. If the runtime choice is missing, ask the operator after showing the available choices; preserve any selection already supplied in the session. Do not infer a preferred VM/engine from the tested examples or create a second VM automatically.
+Inspect existing runtime profiles, engine connections, architecture, available resources, mounts and ownership. Preserve an operator-selected approved runtime. For a new owned environment, this guide recommends the tested **Lima with rootful Podman** recipe. Obtain any missing runtime approval before creation. Do not start a second VM automatically or switch an existing machine's mode.
 
 | Layer | Purpose and selection |
 | --- | --- |
-| Linux VM on macOS | Supplies Linux for the container engine. Existing approved environments may use Lima, Colima, Docker Desktop or a Podman machine; inspect their actual resources and host socket/connection. |
-| Container engine | Docker and rootful Podman are upstream-supported paths with different prerequisites. Use the operator's selected approved engine and qualify it independently. |
+| Linux VM on macOS | Lima supplies the guest Linux OS in the recommended path. Other approved existing environments may use Colima, Docker Desktop or a Podman machine; inspect their actual resources and host socket/connection. |
+| Container engine | Rootful Podman runs containers inside the Lima guest. Docker and rootful Podman are upstream-supported engine paths; each environment needs its own acceptance. |
 | k3d | Creates owned K3s node containers in that engine. It is not the Linux VM or container engine. Let the OCE launcher create its cluster. |
 | K3s | Kubernetes inside the node containers. Avoid starting a separate VM-manager Kubernetes cluster or attaching this development launcher to an unrelated cluster. |
 
-Give OCE distinct cluster/state/ports even when reusing an engine. Do not stop or reconfigure a shared VM to repair OCE. If no existing environment is suitable, obtain the operator's approved VM/engine choice before creating one. The optional Colima/Docker block below supplies one tested example; it does not make Lima, Colima, Docker or Podman the default.
+Give OCE distinct cluster/state/ports even when reusing an engine. Do not stop or reconfigure a shared VM to repair OCE. The recommended recipe creates an owned Lima instance; the reuse paths below preserve an approved existing choice.
+
+### Recommended owned Lima VM with rootful Podman
+
+Use the [official Lima Podman recipe](https://lima-vm.io/docs/examples/containers/podman/) with **`template:podman-rootful`**. The reviewed Lima 2.2.1 template uses a Fedora guest, installs rootful Podman and forwards `/run/podman/podman.sock` to the instance's host socket. Record the actual Lima/guest/Podman versions after creation. Rootful applies inside the VM; run host commands as your normal macOS user. Do not use the rootless Podman template for K3s, which needs the `cpuset` cgroup controller.
+
+Use an unused instance name and the work directory from Section 2. Mount **only that owned directory writable**, at the same absolute guest path, so the source/private state required by the launcher is visible to Podman. Do not make the whole home directory writable. Lima's default read-only home mount can otherwise cause [filesystem-is-not-writable failures](https://lima-vm.io/docs/faq/#filesystem-is-not-writable).
+
+```bash
+export OCC_DEVELOPMENT_CONTAINER_ENGINE=podman
+export OCE_LIMA_INSTANCE='oce-onboarding'
+limactl start --name "$OCE_LIMA_INSTANCE" \
+  --arch aarch64 --vm-type vz --cpus 6 --memory 14 --disk 80 \
+  --mount-only "${OCE_WORK}:w" --tty=false template:podman-rootful
+
+# Configure forwarding once, before creating any OCE cluster.
+limactl stop "$OCE_LIMA_INSTANCE"
+limactl edit "$OCE_LIMA_INSTANCE" --tty=false --set \
+  '.portForwards += [{"guestIP":"127.0.0.1","guestPort":3300,"hostIP":"127.0.0.1","hostPort":3300,"proto":"tcp"},{"guestIP":"127.0.0.1","guestPort":8444,"hostIP":"127.0.0.1","hostPort":8444,"proto":"tcp"},{"guestIP":"127.0.0.1","guestPort":6444,"hostIP":"127.0.0.1","hostPort":6444,"proto":"tcp"},{"guestIP":"0.0.0.0","guestIPMustBeZero":false,"guestPortRange":[1,65535],"proto":"any","ignore":true}]'
+limactl start --tty=false "$OCE_LIMA_INSTANCE"
+
+unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST
+unset CONTAINER_CONNECTION CONTAINER_HOST
+CONTAINER_HOST="$(limactl list "$OCE_LIMA_INSTANCE" \
+  --format 'unix://{{.Dir}}/sock/podman.sock')"
+export CONTAINER_HOST
+export DOCKER_HOST="$CONTAINER_HOST"
+podman --remote --url "$CONTAINER_HOST" version
+OCE_PODMAN_ROOT="$(podman --remote --url "$CONTAINER_HOST" info \
+  --format '{{.Store.GraphRoot}}')"
+limactl shell "$OCE_LIMA_INSTANCE" df -h / "$OCE_PODMAN_ROOT"
+```
+
+Use the filtered instance query: listing every instance can concatenate unrelated socket paths. `CONTAINER_HOST` is Lima's **host-forwarded** API socket, not a guest-only path reported by `podman info`. Keep `CONTAINER_CONNECTION` unset so a saved named connection cannot override it. `DOCKER_HOST` gives k3d the same Podman Docker-compatible endpoint; it does not select a Docker daemon. Do not add/change the default Podman connection or Docker context from the template's convenience message.
+
+The forwarding edit appends to the fresh template **once** while the instance is stopped. It preserves the Podman Unix-socket rule, permits only OCE's three loopback TCP ports and ignores all other automatic TCP/UDP forwarding. `guestIPMustBeZero:false` makes the final rule cover loopback services as well as wildcard listeners. The stop/edit/start sequence and responding Podman socket were verified; the three OCE port listeners will be checked after platform startup. If you choose different OCE ports, change both these rules and Section 4's environment values. Resuming an instance does not repeat this edit. See [Lima's forwarding rule contract](https://github.com/lima-vm/lima/blob/v2.2.1/templates/default.yaml#L513-L560).
+
+From the onboarding repository, rerun the reviewed preflight with `--source "$OCE_WORK/openclaw-enterprise" --engine podman --podman-host "$CONTAINER_HOST" --require-lima`. Require a responding rootful engine, cgroup v2 with `cpuset`, guest-visible work/state paths and adequate capacity on Podman's actual storage mount. A running VM or successful `podman version` alone does not establish installation acceptance. Leave any prior DNS override unset unless fresh node diagnosis requires an approved reachable resolver.
+
+### Reuse an approved rootful Podman machine
+
+Follow [upstream rootful Podman requirements](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/guides/deploy/local-kubernetes-development.md#start-the-profile). Native rootless Podman cannot start this profile because K3s needs the `cpuset` controller. Use an approved **rootful** machine as the normal macOS user; never run host `sudo podman` to approximate this. Rootful/rootless storage is separate, so changing an existing machine affects its environment.
+
+For an explicitly selected approved rootful machine, use its recorded host connection and export the selected engine:
+
+```bash
+unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST CONTAINER_HOST
+export CONTAINER_CONNECTION='<selected approved rootful machine connection>'
+export OCC_DEVELOPMENT_CONTAINER_ENGINE=podman
+```
+
+Replace the connection placeholder before running. Let upstream resolve the machine's host API socket; `podman info` can report a guest-only path, which is invalid as host `DOCKER_HOST`/`CONTAINER_HOST`. Retain the connection and any approved `CONTAINERS_CONF_OVERRIDE` for cleanup. This Podman-machine path differs from the dedicated Lima recipe; independently verify it. Do not uninstall Podman or change organizational runtime policy to use these docs.
 
 ### Selected existing Docker environment
 
@@ -138,23 +208,9 @@ docker image save --help
 
 Replace the socket placeholder before running. Keep using that explicit endpoint in every OCE/k3d lifecycle shell. Check `docker info --format '{{.DockerRootDir}}'` and inspect that **guest path's backing filesystem** using the selected VM manager. For example, run `colima --profile '<existing-profile>' ssh -- df -h / '<DockerRootDir>'` or `limactl shell '<existing-instance>' df -h / '<DockerRootDir>'`. Colima can mount a separate Docker data disk: checking only `/var` can report the smaller guest root disk and miss the actual image-storage capacity. Reuse does not qualify a different kernel/runtime automatically.
 
-### Supported rootful Podman path
+### Historical Colima/Docker recipe
 
-Follow [upstream rootful Podman requirements](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/local-kubernetes-development.md#start-the-profile). Native rootless Podman cannot start this profile because K3s needs the `cpuset` controller. Use an approved **rootful** machine as the normal macOS user; never run host `sudo podman` to approximate this. Rootful/rootless storage is separate, so changing an existing machine affects its environment.
-
-For an explicitly selected approved rootful machine, use its recorded host connection and export the selected engine:
-
-```bash
-unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST CONTAINER_HOST
-export CONTAINER_CONNECTION='<selected approved rootful machine connection>'
-export OCC_DEVELOPMENT_CONTAINER_ENGINE=podman
-```
-
-Replace the connection placeholder before running. Let upstream resolve the machine's host API socket; `podman info` can report a guest-only path, which is invalid as host `DOCKER_HOST`/`CONTAINER_HOST`. Retain the connection and any approved `CONTAINERS_CONF_OVERRIDE` for cleanup. This companion guide's historical Mac acceptance used Docker; independently verify the Podman path. Do not uninstall Podman or change organizational runtime policy to use these docs.
-
-### Optional new Colima/Docker example
-
-Use this block only if the operator explicitly chooses a new owned Colima/Docker profile. It records the October 1/7 tested path; it is not a runtime default.
+Use this block only if the operator explicitly chooses a new owned Colima/Docker profile. It records the earlier October 1/7 tested path. Lima/rootful Podman is the recommended new-VM path.
 
 ```bash
 export OCC_DEVELOPMENT_CONTAINER_ENGINE=docker
@@ -176,7 +232,7 @@ colima --profile "$OCE_PROFILE" ssh -- df -h / "$OCE_DOCKER_ROOT"
 
 Require the selected daemon to respond, Buildx to be a Docker CLI command, and `image save` help to list `--platform`. The socket assumes Colima's default home; customized `COLIMA_HOME` requires its actual host-reachable socket. Do not copy a guest-only socket path. `--activate=false --ssh-config=false` preserves default context/SSH settings. These exports affect only this shell; do not run `docker context use` or `kubectl config use-context`.
 
-Other VM/engine and host combinations require their own acceptance. The October 1/7 receipts establish the Colima VZ/Docker Apple Silicon example; they do not qualify standalone Lima, Docker Desktop, Podman, Intel Mac or Linux variants.
+Other VM/engine and host combinations require their own acceptance. The October 7 receipt establishes this Lima/rootful-Podman recipe with the recorded source repairs; earlier October 1/7 receipts establish the Colima VZ/Docker Apple Silicon example. Docker Desktop, other Podman-machine profiles, Intel Mac and Linux variants remain separately qualified.
 
 ## 4. Install the Kubernetes profile
 
@@ -266,7 +322,7 @@ Sign in as `admin@development.openclaw.invalid` using the generated **Administra
 
 The model key, administrator service key, HTTPS console password and native Agent transport credential have distinct purposes. The diagram follows the direct OpenAI starter; optional hosted GLM uses its separately configured Anthropic-compatible provider and model Secret.
 
-Use a valid **direct OpenAI credential** and explicitly select an available, budget-approved model by its plain ID. This is [upstream's documented prompt-only workflow](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/first-agent.md), not the historical hosted-GLM task used locally. The reviewed helper fixes the provider URL to `https://api.openai.com/v1` and its API to `openai-responses`; it has no gateway URL or reasoning-effort option.
+Use a valid **direct OpenAI credential** and explicitly select an available, budget-approved model by its plain ID. This is [upstream's documented prompt-only workflow](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/guides/first-agent.md), not the historical hosted-GLM task used locally. The reviewed helper fixes the provider URL to `https://api.openai.com/v1` and its API to `openai-responses`; it has no gateway URL or reasoning-effort option.
 
 ```bash
 export OPENCLAW_FIRST_AGENT_MODEL='<approved direct OpenAI model ID>'
@@ -302,7 +358,7 @@ An OpenAI-family model behind an AI gateway is a separate provider configuration
 | Reasoning effort | The selected model, gateway and pinned runtime must all support the requested effort and its configuration/wire mapping. Model selection alone does not set maximum effort. Record the supported setting; do not claim an effort that was not configured. |
 | Authorization and cost | Protected local key file or approved injection, permitted task data, explicit model/budget and bounded verification calls. Startup itself performs a model probe. |
 
-Create a **separate console/API-managed Agent**, following [native Configuration](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/reference/configuration.md) and [Secret/IAM deployment](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/production-agents.md#grant-the-agent-access-to-its-model-secret). Save the gateway key in a Namespace Secret, use a `harnessAuth` Secret binding and native provider `apiKey` SecretRef, and grant the exact Agent `operate` on that Secret. Keep the URL/model/API configuration non-secret; never inline a key in Advanced settings. Do not mutate the helper-managed Agent, whose saved Configuration is deliberately checked on reuse.
+Create a **separate console/API-managed Agent**, following [native Configuration](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/reference/configuration.md) and [Secret/IAM deployment](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/guides/deploy/production-agents.md#grant-the-agent-access-to-its-model-secret). Save the gateway key in a Namespace Secret, use a `harnessAuth` Secret binding and native provider `apiKey` SecretRef, and grant the exact Agent `operate` on that Secret. Keep the URL/model/API configuration non-secret; never inline a key in Advanced settings. Do not mutate the helper-managed Agent, whose saved Configuration is deliberately checked on reuse.
 
 Deploy the saved revision, require its native startup probe to pass, then verify an authenticated model response and matching active revision as in Section 7. Preserve bounded startup checks; a catalog response or successful direct gateway request alone does not qualify OCE routing. A custom endpoint, multi-part model ID, alternate authentication or dedicated Codex adapter needs fresh verification. This public guide supplies no company gateway endpoint or credential.
 
@@ -310,7 +366,7 @@ Keep credential brokering/proxy configuration separate from model routing. Selec
 
 ### OpenAI-compatible gateway configuration: GPT-6 Luna, maximum effort
 
-This configuration selects `gpt-6-luna` through an approved OpenAI-Responses-compatible gateway using bearer API-key authentication. Its OCE/native reference is `openai/gpt-6-luna`; provider ID is `openai`, Harness is `openclaw`, and execution mode is `embedded`. The October 7 CSB run verified the exact frozen/active revision, one matching Ready gateway Pod, unauthenticated denial, a fresh nonce response and arithmetic result **437**, plus HTTPS sign-in and the same Agent/revision in the console. `thinkingDefault=max` and its mapping were preserved in that revision; wire-level effort was not independently captured. Tools were denied and not exercised. Use this only when your approved gateway advertises that exact model and supports Responses and `max` effort; a different gateway needs separate qualification.
+This configuration selects provider model ID `gpt-6-luna` through an approved OpenAI-Responses-compatible gateway using bearer API-key authentication. Its OCE/native reference is `openai/gpt-6-luna`; provider ID is `openai`, Harness is `openclaw`, and execution mode is `embedded`. The October 7 Lima/rootful-Podman CSB run verified the exact admitted/frozen Configuration, a matching Ready gateway Pod and succeeded revision, a fresh nonce response and arithmetic result **437**, plus HTTPS sign-in. Full cluster/VM resume preserved the same revision/configuration/image and Ready Pod; resume verification sent no new model-response test prompt. `thinkingDefault=max` and its source-reviewed mapping were preserved; wire-level effort was not independently captured. Tools were denied and not exercised; billed spend was not measured. The earlier Colima/Docker model check remains historical evidence. Use this only when your approved gateway advertises that exact model and supports Responses and `max` effort; a different gateway needs separate qualification.
 
 Set the gateway's exact **HTTPS API base URL**, retaining its required path prefix (commonly ending in `/v1`), rather than its `/responses` request URL. This block writes a non-secret Configuration only; it creates no OCE resource and makes no model call:
 
@@ -372,10 +428,10 @@ Complete the existing [console creation workflow](https://github.com/openclaw/op
 1. In the Ready `default` platform Namespace, choose **Create Agent → Start without Preset → OpenAI → OpenClaw → Embedded**. Use a unique owned Agent name and **Enter model ID manually** with `gpt-6-luna`.
 2. Choose an existing approved model Secret or create one from the protected **key-only** input through the approved credential workflow. A raw key file contains one token, with no Markdown backticks, prose or shell assignment. Keep it out of chat, logs and Advanced settings. API automation can read `<approved protected key file>` directly in process memory through the [documented Secret creation flow](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/reference/drivers/kubernetes-secret.md#create-a-namespace-owned-secret).
 3. In **Advanced settings**, use the generated native **`values` object**; `kind` is OCC resource metadata. Confirm the model remains `openai/gpt-6-luna`, provider base URL/API and maximum-effort mapping are preserved, tools are denied, and the model key remains a Secret reference.
-4. Save the Agent with `harnessAuth.method=api_key` and the exact Namespace-owned model Secret. The caller and Agent service principal both require **`operate` on that exact Secret**. Confirm credential access completed; if the console reports a grant failure, use **Retry credential access** or the [documented exact IAM grant](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/production-agents.md#grant-the-agent-access-to-its-model-secret). Kubernetes RBAC does not replace that grant.
+4. Save the Agent with `harnessAuth.method=api_key` and the exact Namespace-owned model Secret. The caller and Agent service principal both require **`operate` on that exact Secret**. Confirm credential access completed; if the console reports a grant failure, use **Retry credential access** or the [documented exact IAM grant](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/guides/deploy/production-agents.md#grant-the-agent-access-to-its-model-secret). Kubernetes RBAC does not replace that grant.
 5. Choose **Deploy new version**; it prepares initial transport credentials and admits the saved Configuration. Require the exact deployment to succeed and the same revision to become active. Then perform Section 7's authenticated nonce/prompt check against that revision, recording model, protocol and the frozen maximum-effort configuration. This starter denies tools; a prompt response does not prove tool execution.
 
-For CLI/API automation, reuse the upstream [Agent preparation, IAM and transport/deployment procedure](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/production-agents.md#prepare-each-agent), with this generated Configuration, `AGENT_EXECUTION_MODE=embedded`, `HARNESS_AUTH_METHOD=api_key` and server-returned IDs from your local Ready Namespace. The complete sequence is **Secret → Configuration → Agent → exact IAM grant → runtime credentials → deployment → exact revision/model verification**. The [CLI](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/reference/cli.md) supports Configuration/Agent creation, IAM role/access binding, runtime-credential provisioning and exact `deployment-status`; Secret creation accepts a protected JSON input or the linked protected-file API flow. The source's `occ` examples mean `./bin/occ` in this checkout. The local launcher has already prepared its tenant RBAC and routing: do not apply production RoleBindings or reinstall the platform.
+For CLI/API automation, reuse the upstream [Agent preparation, IAM and transport/deployment procedure](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/guides/deploy/production-agents.md#prepare-each-agent), with this generated Configuration, `AGENT_EXECUTION_MODE=embedded`, `HARNESS_AUTH_METHOD=api_key` and server-returned IDs from your local Ready Namespace. The complete sequence is **Secret → Configuration → Agent → exact IAM grant → runtime credentials → deployment → exact revision/model verification**. The [CLI](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/reference/cli.md) supports Configuration/Agent creation, IAM role/access binding, runtime-credential provisioning and exact `deployment-status`; Secret creation accepts a protected JSON input or the linked protected-file API flow. The source's `occ` examples mean `./bin/occ` in this checkout. The local launcher has already prepared its tenant RBAC and routing: do not apply production RoleBindings or reinstall the platform.
 
 Inspect IDs/recorded outcomes before retrying a lost create/deploy response. Keep original credentials and operator receipts private. This Configuration block is not a replacement installer or a public gateway-specific helper; the linked resource procedures complete deployment. Preserve upstream startup probe limits and an explicit inference budget.
 
@@ -427,7 +483,7 @@ console.log('Non-secret configuration written; no inference performed.');
 NODE
 ```
 
-At the historical pin, this path required the full provider-prefixed nested model reference to avoid truncation of a slash-containing ID, plus `reasoning:true` and `thinkingDefault:"off"` to send explicit thinking-disabled. Recheck current native runtime semantics before adapting it. Preserve the upstream [bounded model startup probe](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/reference/harness-execution.md); do not enlarge or bypass it to hide an authentication/configuration failure.
+At the historical pin, this path required the full provider-prefixed nested model reference to avoid truncation of a slash-containing ID, plus `reasoning:true` and `thinkingDefault:"off"` to send explicit thinking-disabled. Recheck current native runtime semantics before adapting it. Preserve the upstream [bounded model startup probe](https://github.com/openclaw/openclaw-enterprise/blob/e5e206c2a9de01601100c06581cc32f73a174456/docs/reference/harness-execution.md); do not enlarge or bypass it to hide an authentication/configuration failure.
 
 In a Ready Namespace choose **Create Agent → Start without Preset → Anthropic → OpenClaw → Embedded**. Store the model credential in a Namespace Secret, select it as `harnessAuth`, enter the model ID and use the generated native **`values` object** under Advanced settings. `kind` is OCC resource metadata, not native configuration. Follow [upstream console creation](https://github.com/openclaw/openclaw-enterprise/blob/affac2bfc1370e590e6da570bcaaad4a207c9f09/docs/reference/console/create-and-deploy.md), review the saved Secret/configuration and choose **Deploy new version**.
 
@@ -461,7 +517,7 @@ Keep a private non-secret receipt with source/tool/kernel versions, actual image
 
 ## 8. Pause, resume or discard
 
-Retain the selected engine/connection, profile, cluster and state exports. In a new shell, reestablish them before lifecycle commands. Direct `k3d` commands need the host Docker API socket even when the engine is Podman; `CONTAINER_CONNECTION` alone does not select that socket for k3d. Restore only the matching installation's recorded endpoint, without printing its private state:
+Retain the selected engine/connection, Lima instance or VM profile, cluster and state exports. In a new shell, reestablish them before lifecycle commands. Direct `k3d` commands need the host Docker API socket even when the engine is Podman; `CONTAINER_CONNECTION` alone does not select that socket for k3d. Restore only the matching installation's recorded endpoint, without printing its private state:
 
 ```bash
 : "${OCC_DEVELOPMENT_STATE_DIRECTORY:?Restore the owned installation state path}"
@@ -494,7 +550,26 @@ Stop OCE's owned cluster first. Stop the VM only when it belongs solely to this 
 k3d cluster stop "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"
 ```
 
-Only for the optional dedicated Colima profile explicitly chosen in Section 3, when it hosts no unrelated workloads:
+For the recommended owned Lima instance, once its OCE cluster is stopped and it hosts no unrelated workloads:
+
+```bash
+: "${OCE_LIMA_INSTANCE:?Restore the owned Lima instance name}"
+limactl stop "$OCE_LIMA_INSTANCE"
+```
+
+Resume that instance before restoring the endpoint with the block above:
+
+```bash
+: "${OCE_LIMA_INSTANCE:?Restore the owned Lima instance name}"
+limactl start --tty=false "$OCE_LIMA_INSTANCE"
+unset CONTAINER_CONNECTION
+export CONTAINER_HOST="$(limactl list "$OCE_LIMA_INSTANCE" \
+  --format 'unix://{{.Dir}}/sock/podman.sock')"
+```
+
+Then restore `DOCKER_HOST` with the matching-state block and run `k3d cluster start "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"`.
+
+Only for the historical dedicated Colima profile explicitly chosen in Section 3, when it hosts no unrelated workloads:
 
 ```bash
 colima --profile "$OCE_PROFILE" stop
@@ -508,6 +583,8 @@ k3d cluster start "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"
 ```
 
 For a reused runtime, make the selected approved engine available through its recorded connection, restore the endpoint with the block above and start only the owned cluster with `k3d cluster start "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"`. Repeat PostgreSQL/PVC/database readiness and exact active-Agent checks. **`occ dev up` creates/recreates; it is not resume.** PostgreSQL and Agent files persist on the k3d node's storage; stop/start keeps it, whereas deleting the cluster or backing engine/VM storage destroys it.
+
+The October 7 Lima receipt exercised the complete cluster stop → VM stop/start → cluster start sequence. PostgreSQL StatefulSet/PVC/query, API/default Namespace readiness, the same Agent revision/configuration/image/Ready Pod, verified TLS and the browser session/Agent deployment display persisted. Resume verification sent no new test prompt; it establishes retained state and readiness, not a new model response. The smoke Agent was stopped after verification, retaining the platform/console and saved Configuration.
 
 Only to intentionally discard this owned installation, from its matching checkout/environment:
 
@@ -523,9 +600,11 @@ This deletes cluster, database, credentials, Agent state/workspaces and audit hi
 | --- | --- |
 | Registry unauthorized | Use the source-build baseline; never dump registry auth. |
 | Build memory admission | Size the dedicated VM; preserve the upstream heap guard. |
+| Podman cannot find a context-mounted build helper | Check the Fedora/Podman context-file compatibility finding below; record the source repair instead of assuming plain `main` passed. |
+| Podman image import cannot reach `/var/run/docker.sock` | See the tagged-image import diagnostic below. The image build can succeed while k3d's tools-container import fails. |
 | `RUN --mount` needs BuildKit | Require `docker buildx version`; install/register the approved CLI plugin before retrying. |
 | Unsupported `image save --platform` | Select a compatible Docker CLI; preserve unrelated daemons. |
-| Docker daemon cannot pull images | Check guest DNS and `/etc/resolv.conf` before diagnosing k3d. A dangling resolver symlink can break guest/daemon resolution. |
+| Engine daemon cannot pull images | Check the selected guest's DNS and `/etc/resolv.conf` before diagnosing k3d. The historical Colima dangling-resolver repair applies only to that exact cause. |
 | cert-manager/Pod image pull DNS failure | Inspect node resolver and exact Pod events; engine/VM pulls alone do not prove node DNS. Use an approved reachable node resolver only when needed. |
 | HTTP password login 403 | Use the printed HTTPS browser origin; preserve CSRF policy. |
 | First-Agent reports `kubectl` failure | Check the selected state/context, PostgreSQL StatefulSet, database PVC and query before investigating Agent/model configuration. |
@@ -534,9 +613,96 @@ This deletes cluster, database, credentials, Agent state/workspaces and audit hi
 | History collector failure | Recover original native task read-only; never synthesize tool evidence. |
 | Endpoint protection terminates a workload | Retain a private non-secret incident summary and use the organization's approved resolution or alternative environment. |
 
+### Podman build helper mount failure
+
+The first fresh Lima/Fedora 44 build at `e5e206c2a9de01601100c06581cc32f73a174456` failed with **`Cannot find module /tmp/with-pinned-matrix-sdk-crypto.mjs`**. The official launcher rolled back the owned cluster cleanly. The helper was tracked and not excluded by `.dockerignore`; both dependency stages in `deploy/runtime/Dockerfile` mounted it as a single build-context file.
+
+A bounded reproduction with Podman `5.8.7` / Buildah `1.43.4` found the single context-file mount unreadable with permission denied at both mode `0600` and `0644`. A cross-stage directory mount and `COPY` preserved readable exact file bytes. SELinux remained Enforcing. These observations establish the build compatibility failure, not an exact SELinux root cause; changing host/guest security or merely changing the file's mode is not the verified repair.
+
+The source repair in [draft PR #1543](https://github.com/openclaw/openclaw-enterprise/pull/1543), initial commit `d4173134f27d0961126b2df0f804ae90d1f3d7c0` based on `e5e206c2a9de01601100c06581cc32f73a174456`, packages the helper with `COPY` in the shared intermediate stage and removes the two single context-file bind mounts. It retains the pinned SDK library/checksum path, existing cross-stage library mount and private build-secret mounts. That build completed both dependency installations and runtime image creation, then hit the separate image-import failure below. With both repairs frozen at `a6bfbc985943bd79f49def459fdac13f18e06861`, official platform/browser/model acceptance and full VM/cluster resume passed. The recorded unmodified baseline did not pass this reproduction. These commits identify evidence, not an instruction to check out an older baseline.
+
+### Podman tagged-image import failure
+
+The next official launch completed the runtime image build, then k3d's default tagged-image import failed because its tools container could not reach a daemon at **`/var/run/docker.sock`**. The launcher rolled back the owned cluster cleanly. Successful `podman info` through the selected host socket does not establish that socket's availability inside k3d's tools container.
+
+A targeted launcher repair is published in [draft PR #1543](https://github.com/openclaw/openclaw-enterprise/pull/1543), revision `a6bfbc985943bd79f49def459fdac13f18e06861`: after resolving the engine-recorded image name, Podman uses the existing archive/direct-import branch. It retains image/digest verification and archive cleanup; Docker's tagged-image path stays unchanged. The official repaired launch imported runtime/controller/PostgreSQL images and passed networking, native Codex, platform/browser/model and resume checks. Do not guess a `DOCKER_SOCK` override or bypass the official checks. The repaired Go launcher must be rebuilt with `pnpm cli:build` before retrying.
+
+### Temporary repair from current main
+
+Start with Section 2's clean current-`main` checkout, declared toolchain and completed frozen dependency install. Read upstream `AGENTS.md`. Capture the public repair diff once in a new private file; this downloads data and executes no downloaded script:
+
+```bash
+set -euo pipefail
+cd "$OCE_WORK/openclaw-enterprise"
+OCE_SOURCE_STATUS="$(git status --porcelain)" || exit 1
+test -z "$OCE_SOURCE_STATUS" || {
+  printf '%s\n' 'Use a clean current-main checkout before the repair.' >&2
+  exit 1
+}
+OCE_BASE_SHA="$(git rev-parse HEAD)"
+OCE_REPAIR_PR='https://github.com/openclaw/openclaw-enterprise/pull/1543'
+umask 077
+mkdir -p "$OCE_WORK/private"
+chmod 700 "$OCE_WORK/private"
+OCE_REPAIR_PATCH="$(mktemp "$OCE_WORK/private/podman-setup-repair.XXXXXX")"
+curl --fail --silent --show-error --location --max-time 60 \
+  --proto '=https' --proto-redir '=https' \
+  "${OCE_REPAIR_PR}.diff" --output "$OCE_REPAIR_PATCH"
+chmod 600 "$OCE_REPAIR_PATCH"
+python3 - "$OCE_REPAIR_PATCH" <<'PY'
+from pathlib import Path
+import sys
+lines = Path(sys.argv[1]).read_text().splitlines()
+for path in ['deploy/runtime/Dockerfile', 'internal/occdev/kubernetes.go']:
+    if f'diff --git a/{path} b/{path}' not in lines:
+        raise SystemExit(f'The captured repair has no {path} diff; stop and review.')
+PY
+git apply --stat --include=deploy/runtime/Dockerfile \
+  --include=internal/occdev/kubernetes.go "$OCE_REPAIR_PATCH"
+```
+
+**Read the captured diff and both current source files before continuing.** In the Dockerfile, verify one helper `COPY` in the shared dependency-input stage and removal of exactly two context-file helper binds. In `internal/occdev/kubernetes.go`, verify that the archive branch after recorded-name selection changes from `if staged` to `if staged || r.engine == "podman"`, with its explanatory comment. Require no other behavior changes in either file. Review the accompanying regression tests and documentation; the next block applies only the two product files. If the PR has changed beyond this contract, review the new proposal rather than applying it blindly.
+
+In the same shell, check **both files before applying either**. Each may already contain its fix, allowing current `main` to include one or both repairs:
+
+```bash
+set -euo pipefail
+cd "$OCE_WORK/openclaw-enterprise"
+test "$(git rev-parse HEAD)" = "$OCE_BASE_SHA" || exit 1
+OCE_SOURCE_STATUS="$(git status --porcelain)" || exit 1
+test -z "$OCE_SOURCE_STATUS" || exit 1
+OCE_REPAIR_APPLY_COMMAND=(git apply)
+OCE_REPAIR_NEEDED=no
+for OCE_REPAIR_PATH in deploy/runtime/Dockerfile internal/occdev/kubernetes.go; do
+  if git apply --check --include="$OCE_REPAIR_PATH" "$OCE_REPAIR_PATCH" 2>/dev/null; then
+    OCE_REPAIR_APPLY_COMMAND+=("--include=$OCE_REPAIR_PATH")
+    OCE_REPAIR_NEEDED=yes
+    printf '%s\n' "plan:$OCE_REPAIR_PATH=apply-local-repair"
+  elif git apply --check --reverse --include="$OCE_REPAIR_PATH" "$OCE_REPAIR_PATCH" 2>/dev/null; then
+    printf '%s\n' "plan:$OCE_REPAIR_PATH=already-applied-in-baseline"
+  else
+    printf '%s\n' "Source differs: $OCE_REPAIR_PATH. Stop and inspect upstream; do not force this patch." >&2
+    exit 1
+  fi
+done
+if test "$OCE_REPAIR_NEEDED" = yes; then
+  "${OCE_REPAIR_APPLY_COMMAND[@]}" "$OCE_REPAIR_PATCH" || exit 1
+  OCE_REPAIR_STATUS='applied-local-repair'
+else
+  OCE_REPAIR_STATUS='already-applied-in-baseline'
+fi
+git diff -- deploy/runtime/Dockerfile internal/occdev/kubernetes.go
+printf '%s\n' "base=$OCE_BASE_SHA" "repair_pr=$OCE_REPAIR_PR" "status=$OCE_REPAIR_STATUS"
+shasum -a 256 "$OCE_REPAIR_PATCH" deploy/runtime/Dockerfile internal/occdev/kubernetes.go
+# Use Section 2's declared toolchain and installed frozen dependencies.
+pnpm cli:build
+```
+
+Record those outputs privately, plus the reviewed PR revision and final runtime image digest. Label any applied result **current main plus recorded local repair**, rather than plain-main acceptance. Per-file reverse checks handle already-merged or partially merged fixes; an equivalent newer implementation may fail both checks and needs inspection, not forced application. Freeze this checkout for the installation. Complete Section 2's frozen dependency install and CLI build if not done yet; rebuild after every Go repair. Wait for any failed launch's rollback to finish, then rerun the official launcher with all networking, sandbox, database, browser and model acceptance checks. Do not check out the historical proof commit to avoid reviewing current source.
+
 ### Docker Buildx discovery
 
-OCE's runtime Dockerfile uses BuildKit `RUN --mount=type=secret`. If `docker buildx version` is unavailable, the CLI can fall back to the legacy builder even when a standalone `docker-buildx` executable exists. Install the approved Buildx package, then verify it as a **Docker subcommand** with the same `DOCKER_CONFIG` as startup.
+This subsection applies to the Docker path; it does not make Buildx a Podman prerequisite. OCE's runtime Dockerfile uses BuildKit `RUN --mount=type=secret`. If `docker buildx version` is unavailable, the CLI can fall back to the legacy builder even when a standalone `docker-buildx` executable exists. Install the approved Buildx package, then verify it as a **Docker subcommand** with the same `DOCKER_CONFIG` as startup.
 
 If Homebrew supplied the binary but the Docker plugin directory does not contain it, this registers that existing binary without overwriting a plugin:
 
@@ -551,7 +717,16 @@ docker buildx version
 
 Run this only after establishing that the plugin path is absent; if `ln` reports an existing path, inspect it instead of deleting or replacing it. A non-Homebrew installation should use its approved packaging/plugin setup. Wait for a failed startup and its owned-resource rollback to finish before retrying.
 
-### Guest and Docker-daemon DNS
+### Guest and engine-daemon DNS
+
+For the recommended Lima guest, inspect its actual resolver without changing host VPN/DNS:
+
+```bash
+limactl shell "$OCE_LIMA_INSTANCE" cat /etc/resolv.conf
+limactl shell "$OCE_LIMA_INSTANCE" getent hosts registry-1.docker.io
+```
+
+A successful guest lookup does not establish node DNS. The tested Lima guest kept SELinux Enforcing and native user namespaces working without sysctl relaxation. Its official startup/network/native Codex checks passed without a DNS override; scoped owned-node seccomp preparation ran normally. The following historical repair applies only to its established Colima/Ubuntu cause; do not apply it to a working Fedora guest.
 
 First distinguish **guest/daemon DNS** from **k3d node DNS**. Inspect the selected Linux guest using its VM manager. The following commands apply only to the explicitly chosen owned Colima example:
 
@@ -602,15 +777,16 @@ kubectl --kubeconfig "$OCE_KUBECONFIG" --context "$OCE_CONTEXT" \
   -n cert-manager get pods
 kubectl --kubeconfig "$OCE_KUBECONFIG" --context "$OCE_CONTEXT" \
   -n cert-manager describe pods
-docker exec "k3d-$OCC_DEVELOPMENT_KUBERNETES_CLUSTER-server-0" \
-  cat /etc/resolv.conf
-docker exec "k3d-$OCC_DEVELOPMENT_KUBERNETES_CLUSTER-server-0" \
-  nslookup registry-1.docker.io
+case "$OCC_DEVELOPMENT_CONTAINER_ENGINE" in docker|podman) ;; *) exit 1 ;; esac
+"$OCC_DEVELOPMENT_CONTAINER_ENGINE" exec \
+  "k3d-$OCC_DEVELOPMENT_KUBERNETES_CLUSTER-server-0" cat /etc/resolv.conf
+"$OCC_DEVELOPMENT_CONTAINER_ENGINE" exec \
+  "k3d-$OCC_DEVELOPMENT_KUBERNETES_CLUSTER-server-0" nslookup registry-1.docker.io
 ```
 
-Set `OCE_KUBECONFIG="$OCC_DEVELOPMENT_STATE_DIRECTORY/kubeconfig"` and `OCE_CONTEXT="k3d-$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"` in that shell even if startup has not yet printed success. Preserve its exact engine socket. For Podman, use `podman exec` against the owned node. A successful VM/engine image pull can coexist with a failing k3d node resolver.
+Set `OCE_KUBECONFIG="$OCC_DEVELOPMENT_STATE_DIRECTORY/kubeconfig"` and `OCE_CONTEXT="k3d-$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"` in that shell even if startup has not yet printed success. Restore its exact engine endpoint/connection before the selected engine's `exec` command. A successful VM/engine image pull can coexist with a failing k3d node resolver.
 
-At the reviewed source, automatic upstream resolver selection applies to **a Linux launcher host with Docker**. A macOS launcher controlling Colima does not meet that condition. If the node cannot resolve registries, establish an organization-approved non-loopback IPv4 DNS server reachable from that node, and use it for the next fresh startup:
+At the reviewed source, automatic upstream resolver selection applies to **a Linux launcher host with Docker**. A macOS launcher controlling Lima/Podman or Colima/Docker does not meet that condition. If the node cannot resolve registries, establish an organization-approved non-loopback IPv4 DNS server reachable from that node, and use it for the next fresh startup:
 
 ```bash
 export OCC_DEVELOPMENT_K3D_DNS_RESOLVER='<approved reachable IPv4 DNS server>'
@@ -640,7 +816,7 @@ Check storage capacity, image availability, scheduling and database readiness. N
 
 ### Conditional guest user-namespace prerequisite
 
-The tested Ubuntu guest had `kernel.apparmor_restrict_unprivileged_userns=1`, blocking bubblewrap namespace creation even after reviewed seccomp preparation. Diagnose the selected Linux guest first. These commands apply to the explicitly chosen owned Colima example; other VM managers need their own guest access method:
+The earlier Colima/Ubuntu guest had `kernel.apparmor_restrict_unprivileged_userns=1`, blocking bubblewrap namespace creation even after reviewed seccomp preparation. Diagnose the selected Linux guest first. For Lima, inspect with `limactl shell "$OCE_LIMA_INSTANCE" uname -a`; this Fedora reproduction passed native user namespaces and the official scoped node seccomp/Codex check without guest sysctl or SELinux relaxation. Do not apply an Ubuntu/AppArmor sysctl merely because another VM needed it. The following commands apply to the historical owned Colima example:
 
 ```bash
 colima --profile "$OCE_PROFILE" ssh -- uname -a
@@ -655,7 +831,7 @@ colima --profile "$OCE_PROFILE" ssh -- sudo sh -c \
   'test ! -e /etc/sysctl.d/70-oce-local-userns.conf && test ! -L /etc/sysctl.d/70-oce-local-userns.conf && umask 077 && printf "%s\n" "kernel.apparmor_restrict_unprivileged_userns=0" > /etc/sysctl.d/70-oce-local-userns.conf && sysctl -w kernel.apparmor_restrict_unprivileged_userns=0'
 ```
 
-This changes that VM's AppArmor restriction; it is not a shared-cluster workaround or Mac host setting. Rerun unchanged official startup and require workspace-write, outside-write-denied, effective-profile and missing-profile-fails-closed acceptance. Do not use `Unconfined`, disable native sandboxing or bypass checks. See [upstream sandbox preparation](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/codex-sandbox.md).
+This changes that VM's AppArmor restriction; it is not a shared-cluster workaround or Mac host setting. Rerun official startup with its native checks retained and require workspace-write, outside-write-denied, effective-profile and missing-profile-fails-closed acceptance. Do not use `Unconfined`, disable native sandboxing or bypass checks. See [upstream sandbox preparation](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/codex-sandbox.md).
 
 To restore the observed original value of **1**, pause the owned cluster while the VM remains running, then:
 

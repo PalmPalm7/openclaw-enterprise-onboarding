@@ -6,7 +6,7 @@ This repository publishes public onboarding for OpenClaw Enterprise. It contains
 
 Read `setup.md`, then `docs/GETTING_STARTED_AGENTS.md`, and carry out only the operator's requested local installation. `scripts/check-setup.sh` is a read-only first preflight. Documentation edits/site builds do not initiate deployment. Preserve local instructions, owned-resource isolation, explicit model/budget and private credentials. `llms.txt` is discovery; `llms-full.txt` is generated from the brief and runbook. `CLAUDE.md` imports this file rather than duplicating it.
 
-Inventory existing VM/engine setups before runtime selection. Reuse the operator's selected approved environment; if that selection is missing, ask after inspection rather than inferring Docker/Colima from test history. Colima/Docker is an optional tested example, not a preferred runtime. Do not create a VM or switch an existing machine's mode without the operator's selection/authorization. Preserve a runtime choice already supplied in the session.
+Inventory existing VM/engine setups before creating one. This guide recommends an owned Lima VM with rootful Podman for new onboarding; the operator selected that path for this work, and the recorded repaired-source run passed platform/browser/model and full VM/cluster resume checks. It is not a company-wide runtime policy. Preserve an approved runtime choice already supplied in the session. Ask for missing runtime approval after inspection; do not create a VM or switch an existing machine's mode without authorization. Colima/Docker receipts remain historical evidence.
 
 ## Keep two versions
 
@@ -20,6 +20,8 @@ Inventory existing VM/engine setups before runtime selection. Reuse the operator
 Distinguish historical local verification, source-reviewed recipe and fresh reproduction. A login, Ready platform, successful resource creation or model's claimed tool action does not establish genuine Agent task acceptance. Do not label this development profile production-ready or claim full OpenShell integration.
 
 Use current upstream `main` for new exploration and record its resolved SHA per installation. Pinned public source links document the reviewed contract and historical evidence; they do not require a stale checkout. Recheck manifests and changed commands when `main` advances. Keep upstream source checkout instructions separate from instructions for editing this onboarding repository. Read upstream `AGENTS.md` before modifying that product.
+
+The fresh Lima/Fedora/Podman reproduction exposed a context-file helper mount failure and a separate k3d tagged-image import failure. [Draft PR #1543](https://github.com/openclaw/openclaw-enterprise/pull/1543) addresses both; the repaired run passed onboarding and full VM/cluster resume. Follow the runbook's guarded current-main repair procedure when either reviewed fix is absent and record the base SHA plus exact repair identity. Apply only the needed Dockerfile and Go import changes; rebuild the CLI with `pnpm cli:build` before retrying. Do not report the repaired run as plain `main` acceptance or attribute the helper failure specifically to SELinux without evidence. Keep configured maximum effort separate from wire/billing measurement; tools were denied and not exercised, and resume verification sent no new test prompt.
 
 ## Publish only public-safe material
 
