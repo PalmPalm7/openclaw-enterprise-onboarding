@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="420" height="1218" viewBox="0 0 420 1218" role="img" aria-labelledby="title description">
   <title id="title">Agent-assisted OpenClaw Enterprise setup flow</title>
-  <desc id="description">Give your coding agent the llms.txt documentation index, which links to setup.md instructions. The agent inspects tools, resources, existing approved runtimes and ports, selects current OCE source and records its SHA, prepares an owned Kubernetes installation, verifies PostgreSQL, platform readiness and HTTPS login, then configures an approved provider and verifies a real model response and intended active revision. The direct OpenAI helper and a separately configured AI gateway are different paths. A documentation URL does not execute a deployment. Filesystem tools require separate acceptance.</desc>
+  <desc id="description">Give your coding agent the llms.txt documentation index, which links to setup.md instructions. The agent inspects tools, resources, existing approved runtimes and ports, obtains the operator's VM/engine selection if missing, selects current OCE source and records its SHA, and prepares an owned Kubernetes installation inside the selected Linux VM/container engine. It verifies PostgreSQL, platform readiness and HTTPS login, then configures an approved provider and verifies a real model response and intended active revision. The direct OpenAI helper and a separately configured AI gateway are different paths. A documentation URL does not execute a deployment. Filesystem tools require separate acceptance.</desc>
   <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#526777"/></marker></defs>
   <style>
     text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#162a3b}
@@ -27,7 +27,7 @@
   <path class="arrow" d="M 210 384 L 210 429"/>
   <rect x="28" y="433" width="364" height="132" rx="12" fill="#fff6f1" stroke="#cb9b81" stroke-width="1.5"/>
   <text x="210" y="464" class="heading" text-anchor="middle">3. Install the current local platform</text>
-  <text x="210" y="493" class="body" text-anchor="middle">Approved VM + engine; owned cluster</text>
+  <text x="210" y="493" class="body" text-anchor="middle">Selected Linux VM + container engine</text>
   <text x="210" y="519" class="body" text-anchor="middle">k3d-managed K3s + source-built OCE</text>
   <text x="210" y="548" class="note" text-anchor="middle">Record source SHA; Sandbox Driver = none</text>
   <path class="arrow" d="M 210 565 L 210 610"/>

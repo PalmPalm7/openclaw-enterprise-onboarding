@@ -6,6 +6,8 @@ This repository publishes public onboarding for OpenClaw Enterprise. It contains
 
 Read `setup.md`, then `docs/GETTING_STARTED_AGENTS.md`, and carry out only the operator's requested local installation. `scripts/check-setup.sh` is a read-only first preflight. Documentation edits/site builds do not initiate deployment. Preserve local instructions, owned-resource isolation, explicit model/budget and private credentials. `llms.txt` is discovery; `llms-full.txt` is generated from the brief and runbook. `CLAUDE.md` imports this file rather than duplicating it.
 
+Inventory existing VM/engine setups before runtime selection. Reuse the operator's selected approved environment; if that selection is missing, ask after inspection rather than inferring Docker/Colima from test history. Colima/Docker is an optional tested example, not a preferred runtime. Do not create a VM or switch an existing machine's mode without the operator's selection/authorization. Preserve a runtime choice already supplied in the session.
+
 ## Keep two versions
 
 - `docs/GETTING_STARTED.md` is the concise human guide: next action first, five onboarding steps, commands linked to the runbook, explicit expected results.

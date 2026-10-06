@@ -4,14 +4,15 @@ set -uo pipefail
 failures=0
 source_path=''
 docker_host=''
-engine='docker'
+engine=''
 require_colima=0
 
 usage() {
   printf 'Usage: bash scripts/check-setup.sh [--source /path/to/openclaw-enterprise] [--engine docker|podman] [--docker-host unix:///path/to/docker.sock] [--require-colima]\n'
-  printf 'Docker is the default selected engine. Add --require-colima only when choosing the Colima VM path.\n'
+  printf 'Without --engine, installed engines are inventoried without selecting or requiring one.\n'
+  printf 'Add --require-colima only when explicitly choosing the Colima VM path.\n'
   printf 'Without --source, pnpm/Go versions are reported but source compatibility is not checked.\n'
-  printf 'Docker daemon access requires --docker-host. Podman daemon/rootful acceptance remains manual.\n'
+  printf 'Docker daemon access requires both --engine docker and --docker-host. Podman daemon/rootful acceptance remains manual.\n'
   printf 'Remote endpoints and implicit runtime connections are not contacted.\n'
 }
 while [ "$#" -gt 0 ]; do
@@ -30,12 +31,12 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 case "$engine" in
-  docker|podman) :;;
+  ''|docker|podman) :;;
   *) printf 'GAP   --engine must select docker or podman; no engine was switched.\n'; exit 2;;
 esac
 if [ -n "$docker_host" ]; then
   if [ "$engine" != docker ]; then
-    printf 'GAP   --docker-host applies only to --engine docker; Podman connections require separate qualification.\n'
+    printf 'GAP   --docker-host requires an explicit --engine docker selection; no daemon was contacted.\n'
     exit 2
   fi
   case "$docker_host" in
@@ -83,7 +84,11 @@ version_at_least() {
 }
 
 printf 'OCE local setup: read-only preflight\n'
-printf 'INFO  Selected container engine: %s\n' "$engine"
+if [ -n "$engine" ]; then
+  printf 'INFO  Selected container engine: %s\n' "$engine"
+else
+  printf 'NOTE  No container engine selected; inventory only. Select --engine after reviewing the approved existing runtime.\n'
+fi
 if [ "$(uname -s)" = Darwin ] && [ "$(sysctl -n hw.optional.arm64 2>/dev/null || printf 0)" = 1 ]; then
   printf 'OK    Apple Silicon Mac\n'
   if [ "$(uname -m)" != arm64 ]; then
@@ -92,9 +97,10 @@ if [ "$(uname -s)" = Darwin ] && [ "$(sysctl -n hw.optional.arm64 2>/dev/null ||
 else
   gap 'This recipe qualifies an Apple Silicon Mac; other hosts need a separate recipe.'
 fi
-for tool in git bash python3 node pnpm go "$engine" k3d kubectl helm; do
+for tool in git bash python3 node pnpm go k3d kubectl helm; do
   check_command "$tool"
 done
+if [ -n "$engine" ]; then check_command "$engine"; fi
 if [ "$require_colima" -eq 1 ]; then check_command colima; fi
 
 node_requirement='>=24'
@@ -167,34 +173,38 @@ if command -v go >/dev/null 2>&1; then
   fi
 fi
 
-if [ "$engine" = docker ] && command -v docker >/dev/null 2>&1; then
+if command -v docker >/dev/null 2>&1; then
+  printf 'INFO  Installed Docker CLI: %s\n' "$(command -v docker)"
   if docker_version=$(run_bounded docker --version 2>/dev/null); then
     printf 'INFO  Active %s\n' "$docker_version"
-  else gap 'Docker CLI version check failed or timed out.'; fi
-  if save_help=$(run_bounded docker image save --help 2>/dev/null) && [[ "$save_help" == *'--platform'* ]]; then
-    printf 'OK    Docker CLI supports image save --platform\n'
-  else gap 'Active Docker CLI lacks image save --platform; select a compatible CLI before startup.'; fi
-  if buildx_version=$(run_bounded docker buildx version 2>/dev/null); then
-    printf 'OK    Docker buildx plugin: %s\n' "$buildx_version"
-  else
-    gap 'docker buildx is unavailable; configure the Docker CLI plugin before startup.'
-    if command -v docker-buildx >/dev/null 2>&1; then
-      printf 'NOTE  Standalone docker-buildx is installed, but that alone does not make docker buildx work.\n'
+  elif [ "$engine" = docker ]; then gap 'Selected Docker CLI version check failed or timed out.';
+  else printf 'NOTE  Optional Docker CLI version check failed or timed out.\n'; fi
+  if [ "$engine" = docker ]; then
+    if save_help=$(run_bounded docker image save --help 2>/dev/null) && [[ "$save_help" == *'--platform'* ]]; then
+      printf 'OK    Docker CLI supports image save --platform\n'
+    else gap 'Active Docker CLI lacks image save --platform; select a compatible CLI before startup.'; fi
+    if buildx_version=$(run_bounded docker buildx version 2>/dev/null); then
+      printf 'OK    Docker buildx plugin: %s\n' "$buildx_version"
+    else
+      gap 'docker buildx is unavailable; configure the Docker CLI plugin before startup.'
+      if command -v docker-buildx >/dev/null 2>&1; then
+        printf 'NOTE  Standalone docker-buildx is installed, but that alone does not make docker buildx work.\n'
+      fi
+    fi
+    if [ -n "$docker_host" ]; then
+      if [ ! -S "${docker_host#unix://}" ]; then
+        gap 'Selected Docker socket does not exist; verify the approved runtime before repeating the daemon check.'
+      elif daemon=$(run_bounded env -u DOCKER_CONTEXT -u DOCKER_HOST -u DOCKER_TLS_VERIFY -u DOCKER_CERT_PATH docker --host "$docker_host" info --format '{{.ServerVersion}} {{.OSType}}/{{.Architecture}}; memory={{.MemTotal}} bytes; CPUs={{.NCPU}}' 2>/dev/null); then
+        printf 'OK    Explicitly selected local Docker daemon: %s\n' "$daemon"
+      else gap 'Selected local Docker daemon did not answer within five seconds.'; fi
+    else
+      printf 'NOTE  Docker daemon not checked; pass --docker-host with the intentionally selected local socket.\n'
     fi
   fi
   if contexts=$(run_bounded env -u DOCKER_CONTEXT -u DOCKER_HOST -u DOCKER_TLS_VERIFY -u DOCKER_CERT_PATH docker context ls --format '{{.Name}} (current={{.Current}})' 2>/dev/null); then
     printf 'INFO  Saved Docker contexts (process overrides ignored; unchanged):\n%s\n' "${contexts:-  none observed}"
   else printf 'NOTE  Docker context inventory failed or timed out; inspect it manually.\n'; fi
-  if [ -n "$docker_host" ]; then
-    if [ ! -S "${docker_host#unix://}" ]; then
-      gap 'Selected Docker socket does not exist; verify the approved runtime before repeating the daemon check.'
-    elif daemon=$(run_bounded env -u DOCKER_CONTEXT -u DOCKER_HOST -u DOCKER_TLS_VERIFY -u DOCKER_CERT_PATH docker --host "$docker_host" info --format '{{.ServerVersion}} {{.OSType}}/{{.Architecture}}; memory={{.MemTotal}} bytes; CPUs={{.NCPU}}' 2>/dev/null); then
-      printf 'OK    Explicitly selected local Docker daemon: %s\n' "$daemon"
-    else gap 'Selected local Docker daemon did not answer within five seconds.'; fi
-  else
-    printf 'NOTE  Docker daemon not checked; pass --docker-host with the intentionally selected local socket.\n'
-  fi
-fi
+else printf 'INFO  Docker CLI is not installed.\n'; fi
 if command -v colima >/dev/null 2>&1; then
   printf 'INFO  Optional Colima CLI: %s\n' "$(command -v colima)"
   if profiles=$(run_bounded colima list 2>/dev/null); then
@@ -216,10 +226,13 @@ if command -v podman >/dev/null 2>&1; then
   if machines=$(run_bounded env -u CONTAINER_HOST -u CONTAINER_CONNECTION -u DOCKER_HOST -u DOCKER_CONTEXT podman machine list --format '{{.Name}} (running={{.Running}})' 2>/dev/null); then
     printf 'INFO  Existing Podman machines (local inventory only; unchanged):\n%s\n' "${machines:-  none observed}"
   else printf 'NOTE  Podman machine inventory failed or timed out; inspect it manually.\n'; fi
-fi
+else printf 'INFO  Podman CLI is not installed.\n'; fi
 if [ "$engine" = podman ]; then
   printf 'NOTE  Podman daemon, rootful mode, cpuset/cgroup support and host-reachable API socket are not checked.\n'
   printf 'NOTE  Qualify the explicitly selected approved Podman connection with the upstream requirements; this preflight did not contact the current connection.\n'
+fi
+if [ -z "$engine" ]; then
+  printf 'NOTE  Engine compatibility and daemon acceptance are pending; no daemon was contacted.\n'
 fi
 for tool in k3d kubectl helm; do
   if ! command -v "$tool" >/dev/null 2>&1; then continue; fi

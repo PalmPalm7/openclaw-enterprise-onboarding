@@ -28,8 +28,9 @@ Paste this into **Claude Code, Codex or Cursor** with local terminal access:
 
 ```text
 Read https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md
-and follow its linked runbook to set up OCE on this Mac. Inspect prerequisites
-first, reuse an approved runtime or use an owned isolated VM/cluster, preserve existing services, and verify
+and follow its linked runbook to set up OCE on this Mac. Inspect prerequisites and
+existing runtimes; use my selected approved VM/engine, or ask if that choice is missing.
+Preserve existing services, create an owned OCE cluster, and verify
 HTTPS sign-in plus a real Agent model reply. Use my approved model and budget;
 ask only for missing inputs, never for a credential pasted into chat.
 ```
@@ -50,9 +51,9 @@ Use [CONTRIBUTING.md](CONTRIBUTING.md) for improvements. Keep both guide version
 
 ### Architecture
 
-![Local OCE architecture: owned Colima Docker VM, k3d/K3s platform and Agent Pods, and remote model inference](docs/assets/architecture.svg)
+![Tested Colima/Docker example: owned Linux VM, k3d/K3s platform and Agent Pods, and remote model inference](docs/assets/architecture.svg)
 
-Colima supplies the Linux VM; Docker supplies its container engine; k3d manages K3s node containers. They are different layers. The runbook also explains existing Lima/Docker and rootful Podman environments. The platform and Agent tools run locally; inference runs at the approved provider. `Sandbox Driver=none` leaves OpenShell outside this profile. On a company-managed device, use approved runtime, DNS and browser-trust settings and preserve endpoint protection. The [credential diagram](docs/assets/credential-flow.svg) separates model access from administrator and Agent transport authentication.
+Start by inspecting and reusing an approved existing VM/engine. The selected Linux VM supplies the guest OS, the selected engine runs containers, and k3d manages K3s node containers. The runbook covers Docker and supported rootful Podman without selecting a preferred VM/engine. The diagram shows the **October 1/7 tested Colima/Docker example**; its explicit new-profile recipe is optional. The platform and Agent tools run locally; inference runs at the approved provider. `Sandbox Driver=none` leaves OpenShell outside this profile. On a company-managed device, use approved runtime, DNS and browser-trust settings and preserve endpoint protection. The [credential diagram](docs/assets/credential-flow.svg) separates model access from administrator and Agent transport authentication.
 
 ### Why these files
 

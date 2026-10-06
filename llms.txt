@@ -4,7 +4,7 @@
 
 Scope: Apple Silicon Mac, approved Linux VM/engine and an owned k3d/K3s installation. The historical Colima/Docker platform and hosted-GLM tool task passed October 1, 2026 at affac2bfc1370e590e6da570bcaaad4a207c9f09. New exploration uses current upstream main and records the resolved SHA. An October 7 CSB run at 8023db20d5a7cfa84dbfe734d43898fc8cc354ce passed platform/database checks, HTTPS sign-in and a GPT-6 Luna nonce/arithmetic response with maximum effort configured; the same Agent/revision appeared in the console. Tools were not exercised. Browser access used an approved exact local certificate exception, without CA import/system trust claims. Sandbox Driver=none does not qualify OpenShell or production. Models run remotely.
 
-Start with setup.md when asked to install. This index provides documentation discovery, not executable installation. Respect the operator's request, local instructions, company security policy, explicit model/budget and private credential handling. The direct first-Agent helper does not configure arbitrary AI gateways or reasoning effort.
+Start with setup.md when asked to install. Inspect and reuse an approved existing VM/engine before creating one; this guide chooses no preferred VM/engine. Colima/Docker is the tested October 1/7 example with an optional explicit new-profile recipe. This index provides documentation discovery, not executable installation. Respect the operator's request, local instructions, company security policy, explicit model/budget and private credential handling. The direct first-Agent helper does not configure arbitrary AI gateways or reasoning effort.
 
 ## Setup
 
@@ -18,7 +18,7 @@ Start with setup.md when asked to install. This index provides documentation dis
 
 - [Repository instructions](https://redhat-et.github.io/openclaw-enterprise-onboarding/AGENTS.md): contributor workflow and public-content boundaries.
 - [2026 reference research](https://redhat-et.github.io/openclaw-enterprise-onboarding/AGENT_SETUP_REFERENCES.md): 100k-star examples and format distinctions.
-- [Local architecture](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/architecture.svg): platform boundaries and remote inference.
+- [Tested architecture example](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/architecture.svg): October 1/7 Colima/Docker platform boundaries and remote inference; choose your approved runtime first.
 - [Credential flow](https://redhat-et.github.io/openclaw-enterprise-onboarding/assets/credential-flow.svg): model Secret/IAM and separate administrator/transport credentials.
 - [Gateway configuration](https://redhat-et.github.io/openclaw-enterprise-onboarding/GETTING_STARTED_AGENTS.md#openai-compatible-gateway-configuration-gpt-6-luna-maximum-effort): GPT-6 Luna/maximum-effort native Configuration, protected model Secret and complete linked deployment flow; CSB HTTPS sign-in and nonce/arithmetic model response verified, filesystem tools not exercised.
 - [Upstream local profile](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/deploy/local-kubernetes-development.md): current upstream runtime requirements; record the resolved source revision for each run.

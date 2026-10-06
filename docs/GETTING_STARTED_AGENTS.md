@@ -7,13 +7,13 @@ Updated October 7, 2026. New exploration starts from current upstream `main`; re
 ## 1. Select the development profile
 
 ```text
-Apple Silicon Mac → isolated Colima Linux VM → Docker → k3d/K3s
+Apple Silicon Mac → selected Linux VM → selected container engine → k3d/K3s
   → PostgreSQL + OCE API/worker + Envoy Gateway/cert-manager → Agent Pods
 ```
 
 OCE means **OpenClaw Enterprise**; OCC means **OpenClaw Control Plane**. The Mac runs the platform and tools; provider models run remotely.
 
-[![Local architecture with VM, Docker, k3d/K3s, OCE services, tenant Agent and remote inference boundaries](assets/architecture.svg)](assets/architecture.svg)
+[![Tested Colima/Docker example with k3d/K3s, OCE services, tenant Agent and remote inference boundaries](assets/architecture.svg)](assets/architecture.svg)
 
 Click any diagram to open its full-size SVG; the text remains the executable reference.
 
@@ -45,7 +45,7 @@ The conditional guest sysctl in Section 9 changes a Linux VM's policy. Apply it 
 
 If an operator asks your coding agent to install OCE, read [setup.md](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md) and continue this runbook in order. The [llms.txt index](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms.txt) discovers the files; [llms-full.txt](https://redhat-et.github.io/openclaw-enterprise-onboarding/llms-full.txt) combines the brief and runbook for one fetch. These files guide execution; they do not execute on retrieval. Use terminal-capable Claude Code, Codex, Cursor or an equivalent agent.
 
-Read the [preflight script](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh) before running it. From this onboarding repository use `bash scripts/check-setup.sh`. It inventories host/tools, storage, ports and existing runtime profiles without installing or reading credentials. After cloning, add `--source '<OCE checkout>'` to check manifest requirements. It defaults to `--engine docker`; add `--docker-host 'unix://<owned host socket>'` only for the deliberately selected local Docker daemon. Add `--require-colima` when choosing a new Colima profile; an existing Lima/Docker or Docker Desktop environment does not require Colima. For the Podman alternative use `--engine podman`; its CLI/machine inventory does not prove rootful mode, cgroups, host socket or daemon acceptance. The script changes no context and creates no VM/cluster.
+Read the [preflight script](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh) before running it. From this onboarding repository use `bash scripts/check-setup.sh`. It inventories host/tools, storage, ports and existing runtime profiles without choosing an engine, installing or reading credentials. After cloning, add `--source '<OCE checkout>'` to check manifest requirements. Once the operator selects an approved engine, pass `--engine docker` or `--engine podman`. For selected Docker, add `--docker-host 'unix://<owned host socket>'` to check that local daemon. Add `--require-colima` only if choosing the optional new Colima example. Selected Podman CLI/machine inventory does not prove rootful mode, cgroups, host socket or daemon acceptance. The script changes no context and creates no VM/cluster.
 
 [![Agent execution flow from discovery and inspection to owned installation and verification](assets/setup-flow.svg)](assets/setup-flow.svg)
 
@@ -111,18 +111,53 @@ pnpm cli:build
 
 ## 3. Choose the VM and container engine
 
-| Layer | Purpose and choice |
+Inspect existing runtime profiles, engine connections, architecture, available resources, mounts and ownership. Reuse an operator-selected approved environment that can host OCE. If the runtime choice is missing, ask the operator after showing the available choices; preserve any selection already supplied in the session. Do not infer a preferred VM/engine from the tested examples or create a second VM automatically.
+
+| Layer | Purpose and selection |
 | --- | --- |
-| Linux VM on macOS | Colima manages a Lima VM and supplies a host Docker socket. Existing approved Lima/Docker or Docker Desktop environments can supply the same layer; inspect architecture, resources, mounts and ownership first. |
-| Container engine | Docker is this guide's historical working Mac path. Upstream also supports rootful Podman; a company preference for Podman does not make it interchangeable without its prerequisites. |
-| k3d | Creates owned K3s node containers in the selected engine. It is not the Linux VM or the container engine. Let the OCE launcher create its cluster. |
-| K3s | Kubernetes inside those node containers. Do not enable Colima Kubernetes or attach this development launcher to an unrelated cluster. |
+| Linux VM on macOS | Supplies Linux for the container engine. Existing approved environments may use Lima, Colima, Docker Desktop or a Podman machine; inspect their actual resources and host socket/connection. |
+| Container engine | Docker and rootful Podman are upstream-supported paths with different prerequisites. Use the operator's selected approved engine and qualify it independently. |
+| k3d | Creates owned K3s node containers in that engine. It is not the Linux VM or container engine. Let the OCE launcher create its cluster. |
+| K3s | Kubernetes inside the node containers. Avoid starting a separate VM-manager Kubernetes cluster or attaching this development launcher to an unrelated cluster. |
 
-Reuse an approved existing engine only if it has enough free resources and permits this development workload. Give OCE distinct cluster/state/ports, even when the engine is shared. Do not stop or reconfigure a shared VM to repair OCE. A new owned Colima profile is the documented isolation choice when no suitable runtime exists.
+Give OCE distinct cluster/state/ports even when reusing an engine. Do not stop or reconfigure a shared VM to repair OCE. If no existing environment is suitable, obtain the operator's approved VM/engine choice before creating one. The optional Colima/Docker block below supplies one tested example; it does not make Lima, Colima, Docker or Podman the default.
 
-### New owned Colima profile
+### Selected existing Docker environment
+
+Inspect `docker context ls` and the intended context's **non-secret** endpoint, or your VM manager's documented socket. Select its actual host-reachable local Unix socket:
 
 ```bash
+export OCC_DEVELOPMENT_CONTAINER_ENGINE=docker
+unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST
+export DOCKER_HOST='unix://<approved existing host socket>'
+docker version
+docker info --format '{{.OSType}}/{{.Architecture}}; memory={{.MemTotal}}'
+docker buildx version
+docker image save --help
+```
+
+Replace the socket placeholder before running. Keep using that explicit endpoint in every OCE/k3d lifecycle shell. Check `docker info --format '{{.DockerRootDir}}'` and inspect that **guest path's backing filesystem** using the selected VM manager. For example, run `colima --profile '<existing-profile>' ssh -- df -h / '<DockerRootDir>'` or `limactl shell '<existing-instance>' df -h / '<DockerRootDir>'`. Colima can mount a separate Docker data disk: checking only `/var` can report the smaller guest root disk and miss the actual image-storage capacity. Reuse does not qualify a different kernel/runtime automatically.
+
+### Supported rootful Podman path
+
+Follow [upstream rootful Podman requirements](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/local-kubernetes-development.md#start-the-profile). Native rootless Podman cannot start this profile because K3s needs the `cpuset` controller. Use an approved **rootful** machine as the normal macOS user; never run host `sudo podman` to approximate this. Rootful/rootless storage is separate, so changing an existing machine affects its environment.
+
+For an explicitly selected approved rootful machine, use its recorded host connection and export the selected engine:
+
+```bash
+unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST CONTAINER_HOST
+export CONTAINER_CONNECTION='<selected approved rootful machine connection>'
+export OCC_DEVELOPMENT_CONTAINER_ENGINE=podman
+```
+
+Replace the connection placeholder before running. Let upstream resolve the machine's host API socket; `podman info` can report a guest-only path, which is invalid as host `DOCKER_HOST`/`CONTAINER_HOST`. Retain the connection and any approved `CONTAINERS_CONF_OVERRIDE` for cleanup. This companion guide's historical Mac acceptance used Docker; independently verify the Podman path. Do not uninstall Podman or change organizational runtime policy to use these docs.
+
+### Optional new Colima/Docker example
+
+Use this block only if the operator explicitly chooses a new owned Colima/Docker profile. It records the October 1/7 tested path; it is not a runtime default.
+
+```bash
+export OCC_DEVELOPMENT_CONTAINER_ENGINE=docker
 export OCE_PROFILE='oce-onboarding'
 colima --profile "$OCE_PROFILE" start \
   --arch aarch64 --vm-type vz --runtime docker \
@@ -141,28 +176,7 @@ colima --profile "$OCE_PROFILE" ssh -- df -h / "$OCE_DOCKER_ROOT"
 
 Require the selected daemon to respond, Buildx to be a Docker CLI command, and `image save` help to list `--platform`. The socket assumes Colima's default home; customized `COLIMA_HOME` requires its actual host-reachable socket. Do not copy a guest-only socket path. `--activate=false --ssh-config=false` preserves default context/SSH settings. These exports affect only this shell; do not run `docker context use` or `kubectl config use-context`.
 
-### Existing Docker engine
-
-Inspect `docker context ls` and the intended context's **non-secret** endpoint, or your VM manager's documented socket. Select its actual host-reachable local Unix socket:
-
-```bash
-unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST
-export DOCKER_HOST='unix://<approved existing host socket>'
-docker version
-docker info --format '{{.OSType}}/{{.Architecture}}; memory={{.MemTotal}}'
-docker buildx version
-docker image save --help
-```
-
-Replace the socket placeholder before running. Keep using that explicit endpoint in every OCE/k3d lifecycle shell. Check `docker info --format '{{.DockerRootDir}}'` and inspect that **guest path's backing filesystem** using the selected VM manager. For example, run `colima --profile '<existing-profile>' ssh -- df -h / '<DockerRootDir>'` or `limactl shell '<existing-instance>' df -h / '<DockerRootDir>'`. Colima can mount a separate Docker data disk: checking only `/var` can report the smaller guest root disk and miss the actual image-storage capacity. Reuse does not qualify a different kernel/runtime automatically.
-
-### Podman alternative
-
-Follow [upstream rootful Podman requirements](https://github.com/openclaw/openclaw-enterprise/blob/8023db20d5a7cfa84dbfe734d43898fc8cc354ce/docs/guides/deploy/local-kubernetes-development.md#start-the-profile). Native rootless Podman cannot start this profile because K3s needs the `cpuset` controller. Use an approved **rootful** machine as the normal macOS user; never run host `sudo podman` to approximate this. Rootful/rootless storage is separate, so changing an existing machine affects its environment.
-
-Select its recorded host connection and set `OCC_DEVELOPMENT_CONTAINER_ENGINE=podman` instead of the Docker value in Section 4. Let upstream resolve the machine's host API socket; `podman info` can report a guest-only path, which is invalid as host `DOCKER_HOST`/`CONTAINER_HOST`. Retain the connection and any approved `CONTAINERS_CONF_OVERRIDE` for cleanup. This companion guide's historical Mac acceptance used Docker; independently verify the Podman path. Do not uninstall Podman or change organizational runtime policy to use these docs.
-
-Intel Mac, standalone Lima, Docker Desktop, Podman and Linux variants are not qualified by the historical reproduction.
+Other VM/engine and host combinations require their own acceptance. The October 1/7 receipts establish the Colima VZ/Docker Apple Silicon example; they do not qualify standalone Lima, Docker Desktop, Podman, Intel Mac or Linux variants.
 
 ## 4. Install the Kubernetes profile
 
@@ -176,7 +190,11 @@ export OCC_DEVELOPMENT_KUBERNETES_CLUSTER='occ-dev-oce-onboarding'
 export OCC_DEVELOPMENT_COMPUTE_DRIVER=kubernetes
 export OCC_DEVELOPMENT_CONTROL_PLANE=kubernetes
 export OCC_DEVELOPMENT_SANDBOX_DRIVER=none
-export OCC_DEVELOPMENT_CONTAINER_ENGINE=docker
+: "${OCC_DEVELOPMENT_CONTAINER_ENGINE:?Select docker or podman in Section 3 first}"
+case "$OCC_DEVELOPMENT_CONTAINER_ENGINE" in
+  docker|podman) ;;
+  *) printf '%s\n' 'Select an approved docker or podman path in Section 3.' >&2; exit 1 ;;
+esac
 export OCC_DEVELOPMENT_KUBERNETES_NAMESPACE=oce-system
 export OPENCLAW_DEV_PORT=3300
 export OCC_DEVELOPMENT_BROWSER_PORT=8444
@@ -443,25 +461,53 @@ Keep a private non-secret receipt with source/tool/kernel versions, actual image
 
 ## 8. Pause, resume or discard
 
-Retain the exact engine endpoint/connection, profile, cluster and state exports. In a new shell, reestablish them before lifecycle commands. Stop OCE's owned cluster first. Stop the VM only when it belongs solely to this installation; keep a reused/shared VM running for unrelated workloads.
+Retain the selected engine/connection, profile, cluster and state exports. In a new shell, reestablish them before lifecycle commands. Direct `k3d` commands need the host Docker API socket even when the engine is Podman; `CONTAINER_CONNECTION` alone does not select that socket for k3d. Restore only the matching installation's recorded endpoint, without printing its private state:
+
+```bash
+: "${OCC_DEVELOPMENT_STATE_DIRECTORY:?Restore the owned installation state path}"
+: "${OCC_DEVELOPMENT_KUBERNETES_CLUSTER:?Restore the owned cluster name}"
+: "${OCC_DEVELOPMENT_CONTAINER_ENGINE:?Restore the selected engine}"
+unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH
+DOCKER_HOST="$(node --input-type=module <<'NODE'
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+try {
+  const state = JSON.parse(readFileSync(join(process.env.OCC_DEVELOPMENT_STATE_DIRECTORY, 'state.json'), 'utf8'));
+  if (state.cluster !== process.env.OCC_DEVELOPMENT_KUBERNETES_CLUSTER ||
+      state.containerEngine !== process.env.OCC_DEVELOPMENT_CONTAINER_ENGINE ||
+      typeof state.dockerHost !== 'string' || !state.dockerHost.startsWith('unix:///') ||
+      /[\r\n]/.test(state.dockerHost)) throw new Error();
+  process.stdout.write(state.dockerHost);
+} catch {
+  console.error('Cannot restore the matching local engine endpoint.');
+  process.exit(1);
+}
+NODE
+)" || exit 1
+export DOCKER_HOST
+```
+
+Stop OCE's owned cluster first. Stop the VM only when it belongs solely to this installation; keep a reused/shared VM running for unrelated workloads.
 
 ```bash
 # Retain cluster storage; release its active workloads.
 k3d cluster stop "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"
-# Only for the dedicated Colima profile from Section 3:
+```
+
+Only for the optional dedicated Colima profile explicitly chosen in Section 3, when it hosts no unrelated workloads:
+
+```bash
 colima --profile "$OCE_PROFILE" stop
 ```
 
-For that dedicated Colima profile, resume:
+For that dedicated Colima profile, restore the endpoint with the block above, then resume:
 
 ```bash
 colima --profile "$OCE_PROFILE" start --activate=false --ssh-config=false
-unset DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH DOCKER_HOST
-export DOCKER_HOST="unix://$HOME/.colima/$OCE_PROFILE/docker.sock"
 k3d cluster start "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"
 ```
 
-For a reused runtime, restore its recorded approved endpoint/connection and start only the owned k3d cluster. Repeat PostgreSQL/PVC/database readiness and exact active-Agent checks. **`occ dev up` creates/recreates; it is not resume.** PostgreSQL and Agent files persist on the k3d node's storage; stop/start keeps it, whereas deleting the cluster or backing engine/VM storage destroys it.
+For a reused runtime, make the selected approved engine available through its recorded connection, restore the endpoint with the block above and start only the owned cluster with `k3d cluster start "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"`. Repeat PostgreSQL/PVC/database readiness and exact active-Agent checks. **`occ dev up` creates/recreates; it is not resume.** PostgreSQL and Agent files persist on the k3d node's storage; stop/start keeps it, whereas deleting the cluster or backing engine/VM storage destroys it.
 
 Only to intentionally discard this owned installation, from its matching checkout/environment:
 
@@ -507,7 +553,7 @@ Run this only after establishing that the plugin path is absent; if `ln` reports
 
 ### Guest and Docker-daemon DNS
 
-First distinguish **guest/daemon DNS** from **k3d node DNS**. On the owned Colima VM, inspect the current resolver and test guest lookup:
+First distinguish **guest/daemon DNS** from **k3d node DNS**. Inspect the selected Linux guest using its VM manager. The following commands apply only to the explicitly chosen owned Colima example:
 
 ```bash
 colima --profile "$OCE_PROFILE" ssh -- readlink /etc/resolv.conf || true
@@ -594,7 +640,7 @@ Check storage capacity, image availability, scheduling and database readiness. N
 
 ### Conditional guest user-namespace prerequisite
 
-The historical Ubuntu guest had `kernel.apparmor_restrict_unprivileged_userns=1`, blocking bubblewrap namespace creation even after reviewed seccomp preparation. Diagnose your actual guest first:
+The tested Ubuntu guest had `kernel.apparmor_restrict_unprivileged_userns=1`, blocking bubblewrap namespace creation even after reviewed seccomp preparation. Diagnose the selected Linux guest first. These commands apply to the explicitly chosen owned Colima example; other VM managers need their own guest access method:
 
 ```bash
 colima --profile "$OCE_PROFILE" ssh -- uname -a

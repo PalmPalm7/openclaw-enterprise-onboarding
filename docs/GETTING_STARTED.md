@@ -5,10 +5,10 @@
 **Goal:** sign in, deploy one Agent and get a real model reply. Allow **45–90 minutes** with prerequisites installed; this is a planning estimate. An October 7, 2026 CSB Mac run passed platform/database checks, HTTPS sign-in and a GPT-6 Luna nonce/arithmetic response with maximum effort configured. Filesystem tools were not exercised.
 
 ```text
-Mac → Colima Linux VM → Docker → k3d/K3s → OCE + Agent Pods
+Mac → selected Linux VM → selected engine → k3d/K3s → OCE + Agent Pods
 ```
 
-Colima manages a Lima VM; Docker is its container engine; k3d creates the K3s cluster inside containers. They are different layers. The October 7 working allocation is **6 CPUs, 14 GiB RAM and a 60 GiB VM disk**. Separately allow **60 GiB free Mac storage** for build headroom. These are working/planning values, not tested minimums. On company-managed/CSB devices preserve security controls and use approved runtime, DNS and browser-trust settings.
+The VM supplies Linux; the engine runs containers; k3d creates K3s node containers. Inspect and reuse an approved existing VM/engine with enough resources. Colima/Docker is the October 1/7 tested example, with an optional new-profile recipe if you explicitly choose it. The October 7 working allocation is **6 CPUs, 14 GiB RAM and a 60 GiB VM disk**. Separately allow **60 GiB free Mac storage** for build headroom. These are working/planning values, not tested minimums. On CSB devices preserve security controls and use approved runtime, DNS and browser-trust settings.
 
 ## 1. Check your tools
 
@@ -16,9 +16,9 @@ You need Git, Bash, Python 3, Node, pnpm, Go, a container engine, k3d, kubectl a
 
 ## 2. Get the source and VM
 
-Follow [the current source block](GETTING_STARTED_AGENTS.md#clone-current-source), then [choose or reuse the VM/engine](GETTING_STARTED_AGENTS.md#3-choose-the-vm-and-container-engine). New exploration uses upstream **`main`**; record its resolved SHA for the run. Docker is the documented Mac path. Existing Lima/Docker and rootful Podman alternatives are explained in the runbook.
+Follow [the current source block](GETTING_STARTED_AGENTS.md#clone-current-source), then [inspect and select the VM/engine](GETTING_STARTED_AGENTS.md#3-choose-the-vm-and-container-engine). New exploration uses upstream **`main`**; record its resolved SHA for the run. Reuse an approved existing environment first. The runbook covers Docker and supported rootful Podman, plus an optional explicit new Colima/Docker example.
 
-**Expected:** a clean checkout and the selected engine responding through its explicit host socket. Existing services and default contexts stay intact.
+**Expected:** a clean checkout and the selected engine responding through its explicit host socket/connection. Existing services and default contexts stay intact.
 
 ### Prefer your coding agent to do the setup?
 
@@ -26,8 +26,9 @@ Paste into Claude Code, Codex or Cursor with terminal access:
 
 ```text
 Read https://redhat-et.github.io/openclaw-enterprise-onboarding/setup.md
-and set up OCE on this Mac using the linked runbook. Inspect prerequisites,
-reuse an approved runtime or use an isolated owned VM/cluster, preserve existing services, and verify
+and set up OCE on this Mac using the linked runbook. Inspect prerequisites and
+existing runtimes; use my selected approved VM/engine, or ask if that choice is missing.
+Preserve existing services, create an owned OCE cluster, and verify
 HTTPS login and a real model reply. Use my approved model/budget and private
 key-file input. Ask only for missing inputs; never request a key in chat.
 ```
@@ -36,7 +37,7 @@ key-file input. Ask only for missing inputs; never request a key in chat.
 
 [![Agent-led setup from instructions to a verified model reply](assets/setup-flow.svg)](assets/setup-flow.svg)
 
-[![Owned local OCE architecture and remote model inference](assets/architecture.svg)](assets/architecture.svg)
+[![Tested Colima/Docker example: local OCE architecture and remote model inference](assets/architecture.svg)](assets/architecture.svg)
 
 ## 3. Install OCE
 
@@ -69,14 +70,12 @@ This is upstream's documented **prompt-only** workflow; it was not the hosted GL
 
 ## Pause without deleting your work
 
-In the same terminal:
+Restore the selected engine's host endpoint using [the lifecycle instructions](GETTING_STARTED_AGENTS.md#8-pause-resume-or-discard), then:
 
 ```bash
 k3d cluster stop "$OCC_DEVELOPMENT_KUBERNETES_CLUSTER"
-# Only for the dedicated Colima profile created for OCE:
-colima --profile "$OCE_PROFILE" stop
 ```
 
-[Resume instructions](GETTING_STARTED_AGENTS.md#8-pause-resume-or-discard). Keep a reused/shared VM running for unrelated workloads. **`occ dev down` deletes the installation and its data.**
+[VM stop/resume instructions](GETTING_STARTED_AGENTS.md#8-pause-resume-or-discard) follow the runtime you selected. Keep a reused/shared VM running for unrelated workloads. **`occ dev down` deletes the installation and its data.**
 
 **Next:** complete Step 1's tool checklist.
