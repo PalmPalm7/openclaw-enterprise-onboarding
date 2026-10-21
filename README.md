@@ -12,6 +12,7 @@ Public onboarding maintained by [redhat-et](https://github.com/redhat-et) for [O
 | --- | --- |
 | [Human guide](docs/GETTING_STARTED.md) | A short path from prerequisites to one working Agent |
 | [Agent runbook](docs/GETTING_STARTED_AGENTS.md) | Exact commands, configuration, acceptance and recovery |
+| [Codex PR workflow](docs/PR_WORKFLOW.md) | A minimal PR #1537 case study, usage prompt and reusable [skill](.agents/skills/pr-submission-loop/SKILL.md) |
 | [Upstream local setup](https://github.com/openclaw/openclaw-enterprise/blob/main/docs/guides/quickstart.md) | The source project's current instructions |
 
 ## What was verified
@@ -74,4 +75,4 @@ npm run check
 python3 -m http.server 8000 --directory _site
 ```
 
-Open `http://localhost:8000` and inspect both guide views. The static build publishes an explicit allowlist of public guides, agent setup files, the read-only preflight and static diagrams. It does not contact a model provider or deploy OCE. GitHub Pages publishes the same generated site.
+Open `http://localhost:8000` and inspect the human, agent and PR workflow views. The static build publishes an explicit allowlist of public guides, agent setup files, the PR skill, the read-only preflight and static diagrams. It does not contact a model provider or deploy OCE. GitHub Pages publishes the same generated site.
