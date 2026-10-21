@@ -13,7 +13,7 @@ Inventory existing VM/engine setups before creating one. This guide recommends a
 - `docs/GETTING_STARTED.md` is the concise human guide: next action first, five onboarding steps, commands linked to the runbook, explicit expected results.
 - `docs/GETTING_STARTED_AGENTS.md` is the detailed operator/agent runbook: exact inputs, current source selection, private credential handling, acceptance, failure diagnosis and lifecycle.
 - Update both when prerequisites, commands, models or capability boundaries change. Markdown is the authored source; keep any generated site synchronized through its build.
-- Keep execution/discovery links synchronized. Graphs are self-contained SVGs in `docs/assets/`; do not add remote scripts/fonts or executable SVG content.
+- Keep execution/discovery links synchronized. Onboarding graphs are self-contained SVGs in `docs/assets/`. The PR workflow may also use explicitly allowlisted static PNG illustrations and screenshots in `docs/assets/pr-workflow/`; review every image for private material and label its provenance and draft/sent status accurately. Do not add remote scripts/fonts or executable SVG content.
 
 ## Preserve evidence boundaries
 
