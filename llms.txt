@@ -15,6 +15,11 @@ Start with setup.md when asked to install. Lima with rootful Podman is the recom
 - [Read-only preflight](https://redhat-et.github.io/openclaw-enterprise-onboarding/setup-check.sh): inspect before running; checks prerequisites without installation or credentials.
 - [Temporary Podman source repair](https://redhat-et.github.io/openclaw-enterprise-onboarding/GETTING_STARTED_AGENTS.md#temporary-repair-from-current-main): review PR #1543, check each needed Dockerfile/Go fix against a clean current-main baseline, apply only those product files, record provenance and rebuild the CLI before installation acceptance.
 
+## Contribution workflow
+
+- [PR workflow guide](https://redhat-et.github.io/openclaw-enterprise-onboarding/#workflow): the PR #1537 case, contributor actions and how to create a Codex review loop.
+- [PR submission skill](https://redhat-et.github.io/openclaw-enterprise-onboarding/skills/pr-submission-loop/SKILL.md): reusable instructions for implementation, submission, feedback, scheduled follow-up and completion.
+
 ## Optional
 
 - [Repository instructions](https://redhat-et.github.io/openclaw-enterprise-onboarding/AGENTS.md): contributor workflow and public-content boundaries.
