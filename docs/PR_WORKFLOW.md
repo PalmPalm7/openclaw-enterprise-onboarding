@@ -6,7 +6,7 @@ Turn a real contribution into a repeatable skill: **scope → implement → veri
 
 [![Historical PR 1537 workflow: contributor-controlled Codex loop exchanges updates and findings with repository-side review, followed by formal maintainer approval and merge](assets/pr-workflow/loop-comparison.png)](assets/pr-workflow/loop-comparison.png)
 
-*Imagegen illustration of the historical PR #1537 workflow. The contributor owns fixes, evidence and scheduled follow-up; repository agents review the contribution. Formal approval remains a separate maintainer gate.*
+*Imagegen illustration of the historical PR #1537 workflow. The contributor owns fixes, evidence and scheduled follow-up; repository agents review the contribution. Formal approval remains a separate maintainer gate. Our Codex confirms merge and deletes its schedule; the CUA captures in this case were taken after merge.*
 
 ClawSweeper's [historical README](https://github.com/openclaw/clawsweeper/blob/fb5a0d95b269f412aa185cf4deda1c115a83af69/README.md) identifies it as **OpenClaw-hosted**. OCE [dispatched PR events](https://github.com/openclaw/openclaw-enterprise/blob/4ba5eaa6d734c3dddb0ab88c2c35f884c10c429b/.github/workflows/clawsweeper-dispatch.yml) to that service. A [maintainer's clanker](https://github.com/openclaw/openclaw-enterprise/pull/1537#issuecomment-6023601427) separately reviewed scope and compatibility; its hosting is not established. This diagram records the October 2026 case, rather than promising current trigger behavior.
 
