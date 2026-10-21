@@ -24,7 +24,9 @@ const published = [
   { source: 'docs/assets/architecture.svg', file: 'assets/architecture.svg' },
   { source: 'docs/assets/setup-flow.svg', file: 'assets/setup-flow.svg' },
   { source: 'docs/assets/credential-flow.svg', file: 'assets/credential-flow.svg' },
+  { source: 'docs/assets/pr-workflow/loop-comparison.png', file: 'assets/pr-workflow/loop-comparison.png', binary: true },
 ];
+const workflowImages = new Set(published.filter(item => item.binary).map(item => item.file));
 const sources = new Map();
 const generated = new Set(['index.html', 'llms-full.txt', '.nojekyll']);
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -51,8 +53,8 @@ function localLink(value, source) {
 function validateLink(value, source, isImage = false) {
   if (isImage) {
     const linked = localLink(value, source);
-    if (!/^assets\/(?:architecture|setup-flow|credential-flow)\.svg$/.test(linked.file)) {
-      throw new Error(`${source}: image is not in the public SVG allowlist`);
+    if (!/^assets\/(?:architecture|setup-flow|credential-flow)\.svg$/.test(linked.file) && !workflowImages.has(linked.file)) {
+      throw new Error(`${source}: image is not in the public image allowlist`);
     }
     return;
   }
@@ -116,9 +118,19 @@ async function render({ file, source, pane }) {
   return { markdown, html, headings };
 }
 
-await Promise.all(published.map(async ({ source, file }) => {
+await Promise.all(published.map(async ({ source, file, binary }) => {
   const info = await lstat(join(root, source));
   if (!info.isFile()) throw new Error(`${source}: public input must be an ordinary file`);
+  if (binary) {
+    if (info.size < 8 || info.size > 12 * 1024 * 1024) throw new Error(`${source}: PNG must be between 8 bytes and 12 MiB`);
+    const value = await readFile(join(root, source));
+    if (!value.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))) {
+      throw new Error(`${source}: workflow image must have a PNG signature`);
+    }
+    // Pixel content needs visual privacy review; text-only scanners cannot inspect it.
+    sources.set(source, value);
+    return;
+  }
   const value = await readFile(join(root, source), 'utf8');
   checkPublicContent(value, source);
   if (file.endsWith('.svg')) {
@@ -178,7 +190,7 @@ for (const [, href] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
   const file = href.replace(/^\.\//, '').split('#')[0];
   if (!files.has(file)) throw new Error(`Missing published link or image: ${href}`);
 }
-// All inputs, links and SVGs validated before clearing this generated directory.
+// All inputs, links and image formats validated before clearing this generated directory.
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await Promise.all([...files].map(async ([file, value]) => {
