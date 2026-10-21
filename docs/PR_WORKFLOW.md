@@ -43,9 +43,25 @@ The original instruction, October 8, 2026:
 
 ## Computer-use screenshots
 
-The private Google Docs mirror includes historical **Discord, LinkedIn and Slack** browser captures of Codex preparing outreach **after the PR merged**. Each pictured composer is an **unsent draft**. A later private receipt verifies one Slack parent post and three replies on October 13, 2026; Discord and LinkedIn remained unsent.
+These historical browser captures show Codex preparing outreach **after the PR merged**, separately from the review loop. Each pictured composer is an **unsent draft**. The full viewport is retained: Slack uses separate blur blocks over private text; Discord and LinkedIn retain their original background blur, with additional identity blocks obscured. Relevant draft content remains readable. No new messages were sent while preparing this guide.
 
-These screenshots demonstrate computer use, separately from the review loop. They retain some recipient or workspace context, so the originals remain in the private mirror. No new messages were sent while preparing this guide.
+### Discord — unsent draft
+
+[![Full-frame Discord capture with private context blurred and the outreach draft visible](assets/pr-workflow/discord-cua.png)](assets/pr-workflow/discord-cua.png)
+
+*Historical post-merge computer-use demo. The draft remained unsent.*
+
+### LinkedIn — unsent draft
+
+[![Full-frame LinkedIn capture with recipient identity blurred and the message draft visible](assets/pr-workflow/linkedin-cua.png)](assets/pr-workflow/linkedin-cua.png)
+
+*Historical post-merge computer-use demo. The draft remained unsent.*
+
+### Slack — draft composer
+
+[![Full Slack UI with private text blocks blurred and the Codex-prepared announcement draft visible](assets/pr-workflow/slack-cua.png)](assets/pr-workflow/slack-cua.png)
+
+*Historical post-merge computer-use demo. A later private receipt verifies one parent post and three replies on October 13, 2026; this pictured draft does not establish delivery.*
 
 ## Use the skill
 

@@ -25,6 +25,9 @@ const published = [
   { source: 'docs/assets/setup-flow.svg', file: 'assets/setup-flow.svg' },
   { source: 'docs/assets/credential-flow.svg', file: 'assets/credential-flow.svg' },
   { source: 'docs/assets/pr-workflow/loop-comparison.png', file: 'assets/pr-workflow/loop-comparison.png', binary: true },
+  { source: 'docs/assets/pr-workflow/discord-cua.png', file: 'assets/pr-workflow/discord-cua.png', binary: true },
+  { source: 'docs/assets/pr-workflow/linkedin-cua.png', file: 'assets/pr-workflow/linkedin-cua.png', binary: true },
+  { source: 'docs/assets/pr-workflow/slack-cua.png', file: 'assets/pr-workflow/slack-cua.png', binary: true },
 ];
 const workflowImages = new Set(published.filter(item => item.binary).map(item => item.file));
 const sources = new Map();
